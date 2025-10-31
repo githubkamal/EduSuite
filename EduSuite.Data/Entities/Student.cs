@@ -14,7 +14,7 @@ namespace EduSuite.Data.Entities
         public string RollNumber { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
         public string Course { get; set; } = string.Empty;
-        public int Year { get; set; }
+        public string Batch { get; set; } = string.Empty;
 
         public Login Login { get; set; } = null!;
     }

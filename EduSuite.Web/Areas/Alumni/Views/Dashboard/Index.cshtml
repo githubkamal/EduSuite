@@ -1,0 +1,46 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Dashboard - Alumni Management System</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alumni Management System</h1>
+            <p>B.Sc. Computer Science, Madras Christian College</p>
+        </div>
+
+        <div class="content">
+            <div class="nav-buttons">
+                <button class="btn" onclick="window.location.href='add-alumni.html'">Add Alumni</button>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+
+            <h2>Alumni Records</h2>
+            <div id="alumniList" class="alumni-list"></div>
+        </div>
+    </div>
+
+
+    <script>
+         // Load alumni list on page load
+        loadAlumniList();
+
+        function loadAlumniList() {
+        const listDiv = document.getElementById('alumniList');
+        const alumniData = [];
+            if (alumniData.length === 0) {
+                listDiv.innerHTML = '<div class="empty-state">No alumni records found. Click "Add Alumni" to create one.</div>';
+                return;
+            }
+        }
+    </script>
+</body>
+</html>

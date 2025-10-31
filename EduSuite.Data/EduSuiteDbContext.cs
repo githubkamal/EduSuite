@@ -18,6 +18,8 @@ namespace EduSuite.Data
             public DbSet<Login> Logins => Set<Login>();
             public DbSet<Staff> Staffs => Set<Staff>();
             public DbSet<Student> Students => Set<Student>();
+            public DbSet<Department> Departments => Set<Department>();
+            public DbSet<Role> Roles => Set<Role>();
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
@@ -40,6 +42,28 @@ namespace EduSuite.Data
                     .WithOne(l => l.Student)
                     .HasForeignKey<Student>(s => s.LoginId)
                     .OnDelete(DeleteBehavior.Cascade);
+            }
+
+            // Automatically set CreatedOn and ModifiedOn
+            public override int SaveChanges()
+            {
+                var entries = ChangeTracker.Entries<BaseEntity>();
+                var utcNow = DateTime.UtcNow;
+
+                foreach (var entry in entries)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        entry.Entity.CreatedOn = utcNow;
+                        entry.Entity.ModifiedOn = utcNow;
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        entry.Entity.ModifiedOn = utcNow;
+                    }
+                }
+
+                return base.SaveChanges();
             }
         }
     }

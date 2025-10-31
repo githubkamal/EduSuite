@@ -1,0 +1,65 @@
+﻿@model EduSuite.Web.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Alumni Management System</title>
+    <link rel="stylesheet" href="~/css/welcome.css" asp-append-version="true" />   
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alumni Management System</h1>
+            <p>B.Sc. Computer Science, Madras Christian College</p>
+        </div>
+
+        <div class="content">
+            <h2>Staff Login</h2>
+            <div id="loginError" class="error-message"></div>
+            @if (TempData["Success"] != null)
+            {
+                <div class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-4" id="successToast" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            @TempData["Success"]
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+
+                <script>
+                    window.addEventListener('DOMContentLoaded', () => {
+                        const toastEl = document.getElementById('successToast');
+                        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                        toast.show();
+                    });
+                </script>
+            }
+
+            <form asp-action="Login" method="post" id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input asp-for="Email" class="form-control" required />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input asp-for="Password" type="password" class="form-control" required />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div class="link">
+                <a asp-action="Register">Don’t have an account? Register here</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
