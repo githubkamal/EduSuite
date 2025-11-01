@@ -58,9 +58,9 @@ namespace EduSuite.Web.Controllers
                 await _accountService.AddStudentAsync(new()
                 {
                     FullName = model.FullName,
-                    Batch = model.Batch,
+                    BatchId = model.BatchId,
                     RollNumber = model.RollNumber,
-                    Course = model.Course,
+                    DepartmentId = model.DepartmentId,
                     LoginId = login.Id,
 
 

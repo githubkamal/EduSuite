@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2025 at 07:10 PM
+-- Generation Time: Nov 01, 2025 at 01:17 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Database: `edusuite_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `batchs`
+--
+
+CREATE TABLE `batchs` (
+  `BatchId` int(11) NOT NULL,
+  `BatchName` varchar(15) NOT NULL,
+  `CreatedOn` datetime NOT NULL DEFAULT current_timestamp(),
+  `ModifiedBy` int(50) DEFAULT NULL,
+  `ModifiedOn` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `batchs`
+--
+
+INSERT INTO `batchs` (`BatchId`, `BatchName`, `CreatedOn`, `ModifiedBy`, `ModifiedOn`) VALUES
+(1, '2022 - 2025', '2025-11-01 11:59:26', NULL, '2025-11-01 11:59:26');
 
 -- --------------------------------------------------------
 
@@ -126,16 +147,29 @@ CREATE TABLE `students` (
   `LoginId` int(11) NOT NULL,
   `RollNumber` varchar(50) NOT NULL,
   `FullName` varchar(150) NOT NULL,
-  `Course` varchar(100) DEFAULT NULL,
-  `Batch` varchar(50) NOT NULL,
+  `DepartmentId` int(100) NOT NULL,
+  `BatchId` int(50) NOT NULL,
   `ModifiedBy` int(11) DEFAULT NULL,
   `CreatedOn` datetime NOT NULL DEFAULT current_timestamp(),
   `ModifiedOn` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `students`
+--
+
+INSERT INTO `students` (`Id`, `LoginId`, `RollNumber`, `FullName`, `DepartmentId`, `BatchId`, `ModifiedBy`, `CreatedOn`, `ModifiedOn`) VALUES
+(1, 2, 'BSC001', 'Kamal Vshal', 1, 1, NULL, '2025-11-01 15:37:55', '2025-11-01 15:37:55');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `batchs`
+--
+ALTER TABLE `batchs`
+  ADD PRIMARY KEY (`BatchId`);
 
 --
 -- Indexes for table `departments`
@@ -174,6 +208,12 @@ ALTER TABLE `students`
 --
 
 --
+-- AUTO_INCREMENT for table `batchs`
+--
+ALTER TABLE `batchs`
+  MODIFY `BatchId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
@@ -201,7 +241,7 @@ ALTER TABLE `staffs`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

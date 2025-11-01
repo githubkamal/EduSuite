@@ -20,6 +20,7 @@ namespace EduSuite.Data
             public DbSet<Student> Students => Set<Student>();
             public DbSet<Department> Departments => Set<Department>();
             public DbSet<Role> Roles => Set<Role>();
+            public DbSet<Batch> Batchs => Set<Batch>();
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {

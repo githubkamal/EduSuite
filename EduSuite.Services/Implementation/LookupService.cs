@@ -18,6 +18,7 @@ namespace EduSuite.Services.Implementation
         {
             _context = context;
         }
+
         public async Task<List<Department>> GetDepartments()
         {
             return await _context.Departments.ToListAsync();
@@ -26,6 +27,11 @@ namespace EduSuite.Services.Implementation
         public async Task<List<Role>> GetRoles()
         {
             return await _context.Roles.ToListAsync();
+        }
+
+        public async Task<List<Batch>> GetBatchs()
+        {
+            return await _context.Batchs.ToListAsync();
         }
     }
 }

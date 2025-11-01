@@ -1,14 +1,246 @@
 ﻿@{
     Layout = null;
 }
-
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Dashboard - Alumni Management System</title>
     <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link href="~/css/ag-grid.css" rel="stylesheet" />
+    <link href="~/css/ag-theme-alpine.css" rel="stylesheet" />
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="~/js/select2.min.js"></script>
+    <style>
+        .search-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+
+            .form-group.search-input {
+                flex: 0 1 300px;
+            }
+
+            .form-group label {
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #333;
+            }
+
+            .form-group input {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                height: 38px;
+            }
+
+            .form-group select {
+                width: 100%;
+            }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 38px;
+            max-height: 38px;
+            overflow: hidden;
+        }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                padding: 0 8px;
+                display: flex;
+                align-items: center;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+                .select2-container--default .select2-selection--multiple .select2-selection__rendered::-webkit-scrollbar {
+                    height: 4px;
+                }
+
+                .select2-container--default .select2-selection--multiple .select2-selection__rendered::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 2px;
+                }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #80bdff;
+        }
+
+        .search-btn {
+            padding: 8px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            height: 38px;
+        }
+
+            .search-btn:hover {
+                background: #0056b3;
+            }
+
+        .clear-btn {
+            padding: 8px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            height: 38px;
+        }
+
+            .clear-btn:hover {
+                background: #5a6268;
+            }
+
+        /* Loader styles */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+            .loader-overlay.show {
+                display: flex;
+            }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        /* Export buttons */
+        .export-buttons {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .export-btn {
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .export-btn:hover {
+                background: #218838;
+            }
+
+            .export-btn.csv {
+                background: #17a2b8;
+            }
+
+                .export-btn.csv:hover {
+                    background: #138496;
+                }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        /* Make Select2 multi-select look exactly like textboxes */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 10px !important;
+            box-sizing: border-box;
+            background-color: #fff !important;
+        }
+
+            /* Center placeholder text and selected tags vertically */
+            .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+                display: flex !important;
+                align-items: center !important;
+                height: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+        /* Placeholder text style to match input placeholder */
+        .select2-selection__placeholder {
+            color: #6c757d !important;
+            font-size: 14px !important;
+        }
+
+        /* Make the cross (×) vertically centered too */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 26px !important;
+        }
+
+        /* Keep the dropdown arrow aligned (for single-selects if used) */
+        .select2-selection__arrow {
+            height: 100% !important;
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">
@@ -16,30 +248,254 @@
             <h1>Alumni Management System</h1>
             <p>B.Sc. Computer Science, Madras Christian College</p>
         </div>
-
         <div class="content">
             <div class="nav-buttons">
                 <button class="btn" onclick="window.location.href='add-alumni.html'">Add Alumni</button>
                 <button class="btn btn-secondary" onclick="logout()">Logout</button>
             </div>
-
             <h2>Alumni Records</h2>
-            <div id="alumniList" class="alumni-list"></div>
+
+            <!-- Search Form -->
+            <div class="search-form">
+                <div class="search-row">
+                    <div class="form-group">
+                        <label for="searchRollNumber">Roll Number</label>
+                        <input type="text" id="searchRollNumber" placeholder="Enter roll number">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchFullName">Full Name</label>
+                        <input type="text" id="searchFullName" placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchDepartment">Department</label>
+                        <select id="searchDepartment" multiple="multiple">
+                            @foreach (var dept in ViewBag.Departments)
+                            {
+                                <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchBatch">Batch</label>
+                        <select id="searchBatch" multiple="multiple">
+                            @foreach (var batch in ViewBag.Batches)
+                            {
+                                <option value="@batch.BatchId">@batch.BatchName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="form-group search-input">
+                        <label for="searchGeneral">General Search</label>
+                        <input type="text" id="searchGeneral" placeholder="Search all fields">
+                    </div>
+                    <div class="button-group">
+                        <button class="search-btn" onclick="searchData()">Search</button>
+                        <button class="clear-btn" onclick="clearSearch()">Clear</button>
+                        <button class="export-btn" onclick="exportToExcel()">Export Excel</button>
+                        <button class="export-btn csv" onclick="exportToCSV()">Export CSV</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ag-theme-alpine" style="height: 500px; width: 100%;">
+                <div id="myGrid" style="height: 100%; width: 100%;"></div>
+            </div>
         </div>
     </div>
-
-
+    <!-- Loader -->
+    <div class="loader-overlay" id="loader">
+        <div class="loader"></div>
+    </div>
+    
     <script>
-         // Load alumni list on page load
-        loadAlumniList();
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <script>
+        let gridApi;
 
-        function loadAlumniList() {
-        const listDiv = document.getElementById('alumniList');
-        const alumniData = [];
-            if (alumniData.length === 0) {
-                listDiv.innerHTML = '<div class="empty-state">No alumni records found. Click "Add Alumni" to create one.</div>';
-                return;
+        // Extract departments and batches from ViewBag
+        const departments = @Html.Raw(Json.Serialize(ViewBag.Departments));
+        const batches = @Html.Raw(Json.Serialize(ViewBag.Batches));
+                console.log('departments:', departments);
+        console.log('batches:', batches);
+        document.addEventListener('DOMContentLoaded', function () {
+          const gridOptions = {
+            theme: 'legacy',
+            columnDefs: [
+              { headerName: "ID", field: "id", sortable: true, filter: 'agNumberColumnFilter', hide: true },
+              {
+                headerName: "Roll Number",
+                field: "rollNumber",
+                sortable: true,
+                filter: 'agTextColumnFilter'
+              },
+              {
+                headerName: "Full Name",
+                field: "fullName",
+                sortable: true,
+                filter: 'agTextColumnFilter'
+              },
+              {
+                headerName: "Department",
+                field: "departmentName",
+                sortable: true,
+                filter: 'agTextColumnFilter'
+                //filter: 'agSetColumnFilter',
+                // filterParams: {
+                //   values: departments.map(d => d.departmentName)
+                // }
+              },
+              {
+                headerName: "Batch",
+                field: "batchName",
+                sortable: true,
+                filter: 'agTextColumnFilter'
+                // filter: 'agSetColumnFilter',
+                // filterParams: {
+                //   values: batches.map(b => b.batchName)
+                // }
+              },
+            ],
+            defaultColDef: {
+              flex: 1,
+              sortable: true,
+              filter: true,
+              resizable: true
+            },
+            pagination: true,
+            paginationPageSize: 10,
+            rowData: [],
+            overlayNoRowsTemplate: '<span style="padding: 20px; font-size: 16px; color: #666;">No records to display</span>',
+            overlayLoadingTemplate: '<span style="padding: 20px; font-size: 16px; color: #666;">Loading data...</span>'
+          };
+
+          const gridDiv = document.querySelector('#myGrid');
+          gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+          // Initialize Select2 for multi-select dropdowns
+          $('#searchDepartment').select2({
+            placeholder: 'Select departments',
+            allowClear: true
+          });
+
+          $('#searchBatch').select2({
+            placeholder: 'Select batches',
+            allowClear: true
+          });
+
+          // Load initial data
+          loadData();
+        });
+
+        async function loadData(searchParams = {}) {
+          try {
+            // Show loader
+            document.getElementById('loader').classList.add('show');
+
+            const request = {
+              page: 1,
+              pageSize: 10000, // Load all data for client-side operations
+              search: searchParams.general || '',
+              sortColumn: null,
+              sortDir: null,
+              filters: {}
+            };
+
+            // Add specific field filters
+            if (searchParams.rollNumber) {
+              request.filters.rollNumber = [searchParams.rollNumber];
             }
+            if (searchParams.fullName) {
+              request.filters.fullName = [searchParams.fullName];
+            }
+            if (searchParams.departments && searchParams.departments.length > 0) {
+              request.filters.departmentId = searchParams.departments;
+            }
+            if (searchParams.batches && searchParams.batches.length > 0) {
+              request.filters.batchId = searchParams.batches;
+            }
+
+            console.log('Loading data with params:', request);
+
+            const response = await fetch('/Alumni/GetAlumnis', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(request)
+            });
+
+            if (!response.ok) {
+              console.error('Response error:', response.status, response.statusText);
+              alert('Error loading data. Please try again.');
+              return;
+            }
+
+            const result = await response.json();
+            console.log('Loaded data:', result);
+
+            // Set row data - AG Grid will handle client-side filtering, sorting, and pagination
+            gridApi.setGridOption('rowData', result.data || []);
+
+            // Show no rows overlay if no data
+            if (!result.data || result.data.length === 0) {
+              gridApi.showNoRowsOverlay();
+            }
+
+          } catch (error) {
+            console.error('Error loading data:', error);
+            alert('Error loading data. Please check console for details.');
+          } finally {
+            // Hide loader
+            document.getElementById('loader').classList.remove('show');
+          }
+        }
+
+        function searchData() {
+          const searchParams = {
+            rollNumber: document.getElementById('searchRollNumber').value.trim(),
+            fullName: document.getElementById('searchFullName').value.trim(),
+            departments: $('#searchDepartment').val() || [],
+            batches: $('#searchBatch').val() || [],
+            general: document.getElementById('searchGeneral').value.trim()
+          };
+
+          loadData(searchParams);
+        }
+
+        function clearSearch() {
+          document.getElementById('searchRollNumber').value = '';
+          document.getElementById('searchFullName').value = '';
+          $('#searchDepartment').val(null).trigger('change');
+          $('#searchBatch').val(null).trigger('change');
+          document.getElementById('searchGeneral').value = '';
+          loadData();
+        }
+
+        // Allow Enter key to trigger search
+        document.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            searchData();
+          }
+        });
+
+        function logout() {
+          window.location.href = '/logout';
+        }
+
+        // Export functions
+        function exportToExcel() {
+          gridApi.exportDataAsExcel({
+            fileName: 'Alumni_Records_' + new Date().toISOString().split('T')[0] + '.xlsx',
+            sheetName: 'Alumni'
+          });
+        }
+
+        function exportToCSV() {
+          gridApi.exportDataAsCsv({
+            fileName: 'Alumni_Records_' + new Date().toISOString().split('T')[0] + '.csv'
+          });
         }
     </script>
 </body>

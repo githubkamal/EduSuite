@@ -11,5 +11,6 @@ namespace EduSuite.Services.Interface
     {
         Task<List<Department>> GetDepartments();
         Task<List<Role>> GetRoles();
+        Task<List<Batch>> GetBatchs();
     }
 }

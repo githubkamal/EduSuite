@@ -17,20 +17,18 @@ namespace EduSuite.Web.Models
         [Required]
         public int RoleId { get; set; } // "Student" or "Staff"
 
-        // Student-specific
-        [MaxLength(50)]
-        public string RollNumber { get; set; }
-
-        [MaxLength(100)]
-        public string Course { get; set; }
-
-        [MaxLength(50)]
-        public string Batch { get; set; }
+        public int DepartmentId { get; set; }
 
         // Staff-specific
 
         [MaxLength(50)]
         public string StaffCode { get; set; }
-        public int DepartmentId { get; set; }
+
+        // Student-specific
+        [MaxLength(50)]
+        public string RollNumber { get; set; }
+
+        public int BatchId { get; set; }
+
     }
 }

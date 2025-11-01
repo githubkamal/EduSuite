@@ -29,6 +29,7 @@ builder.Services.AddSession();
 // Register your custom services (Business Layer)
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<IAlumniService, AlumniService>();
 
 // Add MVC services
 builder.Services.AddControllersWithViews();
