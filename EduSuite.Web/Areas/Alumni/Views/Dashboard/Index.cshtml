@@ -152,16 +152,13 @@
         }
 
         @@keyframes spin {
-            0%
+            0% {
+                transform: rotate(0deg);
+            }
 
-        {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Export buttons */
@@ -211,7 +208,6 @@
             background-color: #fff !important;
         }
 
-            /* Center placeholder text and selected tags vertically */
             .select2-container--default .select2-selection--multiple .select2-selection__rendered {
                 display: flex !important;
                 align-items: center !important;
@@ -220,13 +216,11 @@
                 margin: 0 !important;
             }
 
-        /* Placeholder text style to match input placeholder */
         .select2-selection__placeholder {
             color: #6c757d !important;
             font-size: 14px !important;
         }
 
-        /* Make the cross (×) vertically centered too */
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
             margin-top: 0 !important;
             margin-bottom: 0 !important;
@@ -235,23 +229,152 @@
             height: 26px !important;
         }
 
-        /* Keep the dropdown arrow aligned (for single-selects if used) */
         .select2-selection__arrow {
             height: 100% !important;
         }
 
+        /* Grid and Detail Card Layout */
+        .grid-detail-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .grid-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Detail Card Styles */
+        .detail-card {
+            width: 400px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: 500px;
+            overflow-y: auto;
+            display: none;
+            position: sticky;
+            top: 20px;
+        }
+
+            .detail-card.show {
+                display: block;
+            }
+
+        .detail-card-header {
+            padding: 15px 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .detail-card-header h3 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+        .close-detail {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+            .close-detail:hover {
+                background: rgba(255,255,255,0.2);
+            }
+
+        .detail-card-body {
+            padding: 20px;
+        }
+
+        .detail-field {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+            .detail-field:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .detail-field-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-field-value {
+            color: #333;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+            .detail-field-value.empty {
+                color: #999;
+                font-style: italic;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1400px) {
+            .detail-card {
+                width: 350px;
+            }
+        }
+
+        @@media (max-width: 1200px) {
+            .grid-detail-container {
+                flex-direction: column;
+            }
+
+            .detail-card {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Alumni Management System</h1>
-            <p>B.Sc. Computer Science, Madras Christian College</p>
+            <div class="header-user">
+                <span class="user-name">
+                    <span class="user-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <span id="userName">Welcome, User</span>
+                </span>
+                <button class="btn btn-logout" onclick="logout()">Logout</button>
+            </div>
+            <div class="header-content">
+                <h1>Alumni Management System</h1>
+                <p>B.Sc. Computer Science, Madras Christian College</p>
+            </div>
         </div>
         <div class="content">
             <div class="nav-buttons">
                 <button class="btn" onclick="window.location.href='add-alumni.html'">Add Alumni</button>
-                <button class="btn btn-secondary" onclick="logout()">Logout</button>
             </div>
             <h2>Alumni Records</h2>
 
@@ -299,8 +422,24 @@
                 </div>
             </div>
 
-            <div class="ag-theme-alpine" style="height: 500px; width: 100%;">
-                <div id="myGrid" style="height: 100%; width: 100%;"></div>
+            <!-- Grid and Detail Card Container -->
+            <div class="grid-detail-container">
+                <div class="grid-wrapper">
+                    <div class="ag-theme-alpine" style="height: 500px; width: 100%;">
+                        <div id="myGrid" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Detail Card -->
+                <div class="detail-card" id="detailCard">
+                    <div class="detail-card-header">
+                        <h3>Alumni Details</h3>
+                        <button class="close-detail" onclick="closeDetailCard()">&times;</button>
+                    </div>
+                    <div class="detail-card-body" id="detailCardBody">
+                        <!-- Detail fields will be populated here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -308,7 +447,7 @@
     <div class="loader-overlay" id="loader">
         <div class="loader"></div>
     </div>
-    
+
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
@@ -319,8 +458,41 @@
         // Extract departments and batches from ViewBag
         const departments = @Html.Raw(Json.Serialize(ViewBag.Departments));
         const batches = @Html.Raw(Json.Serialize(ViewBag.Batches));
-                console.log('departments:', departments);
+        console.log('departments:', departments);
         console.log('batches:', batches);
+
+        // Define all fields that should appear in the detail card
+        const detailFields = [
+            { key: 'nameFromForm', label: 'Name From Form' },
+            { key: 'dateOfBirth', label: 'Date Of Birth', format: 'date' },
+            { key: 'personalEmail', label: 'Personal Email' },
+            { key: 'religionCommunity', label: 'Religion Community' },
+            { key: 'nationality', label: 'Nationality' },
+            { key: 'aadharNo', label: 'Aadhar Number' },
+            { key: 'bloodGroup', label: 'Blood Group' },
+            { key: 'mobileNumber', label: 'Mobile Number' },
+            { key: 'sslcSchool', label: 'SSLC School' },
+            { key: 'sslcMarks', label: 'SSLC Marks' },
+            { key: 'sslcPercentage', label: 'SSLC Percentage' },
+            { key: 'sslcAchievements', label: 'SSLC Achievements' },
+            { key: 'modeOfConveyance', label: 'Mode Of Conveyance' },
+            { key: 'hallNameRoom', label: 'Hall Name/Room' },
+            { key: 'localGuardianName', label: 'Local Guardian Name' },
+            { key: 'localGuardianPhone', label: 'Local Guardian Phone' },
+            { key: 'hobbies', label: 'Hobbies' },
+            { key: 'extraCurricularInterests', label: 'Extra-Curricular Interests' },
+            { key: 'socialFacebook', label: 'Facebook' },
+            { key: 'socialInstagram', label: 'Instagram' },
+            { key: 'socialTwitter', label: 'Twitter' },
+            { key: 'languagesKnown', label: 'Languages Known' },
+            { key: 'interestedInPartTimeJob', label: 'Interested In Part-Time Job' },
+            { key: 'specialHealthComplaint', label: 'Special Health Complaint' },
+            { key: 'physicalDisability', label: 'Physical Disability' },
+            { key: 'emergencyPhone', label: 'Emergency Phone' },
+            { key: 'dateOfSignature', label: 'Date Of Signature', format: 'date' },
+            { key: 'parentGuardianSignature', label: 'Parent/Guardian Signature' }
+        ];
+
         document.addEventListener('DOMContentLoaded', function () {
           const gridOptions = {
             theme: 'legacy',
@@ -328,13 +500,19 @@
               { headerName: "ID", field: "id", sortable: true, filter: 'agNumberColumnFilter', hide: true },
               {
                 headerName: "Roll Number",
-                field: "rollNumber",
+                field: "regNo",
                 sortable: true,
                 filter: 'agTextColumnFilter'
               },
               {
                 headerName: "Full Name",
-                field: "fullName",
+                field: "name",
+                sortable: true,
+                filter: 'agTextColumnFilter'
+              },
+              {
+                headerName: "Email",
+                field: "mccEmail",
                 sortable: true,
                 filter: 'agTextColumnFilter'
               },
@@ -343,20 +521,12 @@
                 field: "departmentName",
                 sortable: true,
                 filter: 'agTextColumnFilter'
-                //filter: 'agSetColumnFilter',
-                // filterParams: {
-                //   values: departments.map(d => d.departmentName)
-                // }
               },
               {
                 headerName: "Batch",
                 field: "batchName",
                 sortable: true,
                 filter: 'agTextColumnFilter'
-                // filter: 'agSetColumnFilter',
-                // filterParams: {
-                //   values: batches.map(b => b.batchName)
-                // }
               },
             ],
             defaultColDef: {
@@ -368,6 +538,8 @@
             pagination: true,
             paginationPageSize: 10,
             rowData: [],
+            rowSelection: 'single',
+            onRowClicked: onRowClicked,
             overlayNoRowsTemplate: '<span style="padding: 20px; font-size: 16px; color: #666;">No records to display</span>',
             overlayLoadingTemplate: '<span style="padding: 20px; font-size: 16px; color: #666;">Loading data...</span>'
           };
@@ -389,6 +561,72 @@
           // Load initial data
           loadData();
         });
+
+         function formatDate(dateString) {
+          if (!dateString) return null;
+          try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+          } catch (e) {
+            return dateString;
+          }
+        }
+
+        function onRowClicked(event) {
+          const rowData = event.data;
+          showDetailCard(rowData);
+        }
+
+        function showDetailCard(data) {
+           const detailCard = document.getElementById('detailCard');
+           const detailCardBody = document.getElementById('detailCardBody');
+
+           // Clear existing content
+           detailCardBody.innerHTML = '';
+
+           // Populate detail fields
+           detailFields.forEach(field => {
+             let value = data[field.key];
+
+             const fieldDiv = document.createElement('div');
+             fieldDiv.className = 'detail-field';
+
+             const labelDiv = document.createElement('div');
+             labelDiv.className = 'detail-field-label';
+             labelDiv.textContent = field.label;
+
+             const valueDiv = document.createElement('div');
+             valueDiv.className = 'detail-field-value';
+
+             // Format date fields
+             if (field.format === 'date' && value) {
+               value = formatDate(value);
+             }
+
+             if (value !== null && value !== undefined && value !== '') {
+               valueDiv.textContent = value;
+             } else {
+               valueDiv.textContent = 'Not provided';
+               valueDiv.classList.add('empty');
+             }
+
+             fieldDiv.appendChild(labelDiv);
+             fieldDiv.appendChild(valueDiv);
+             detailCardBody.appendChild(fieldDiv);
+           });
+
+           // Show the card
+           detailCard.classList.add('show');
+         }
+
+        function closeDetailCard() {
+          const detailCard = document.getElementById('detailCard');
+          detailCard.classList.remove('show');
+        }
 
         async function loadData(searchParams = {}) {
           try {
@@ -418,7 +656,6 @@
               request.filters.batchId = searchParams.batches;
             }
 
-            console.log('Loading data with params:', request);
 
             const response = await fetch('/Alumni/GetAlumnis', {
               method: 'POST',
@@ -433,7 +670,6 @@
             }
 
             const result = await response.json();
-            console.log('Loaded data:', result);
 
             // Set row data - AG Grid will handle client-side filtering, sorting, and pagination
             gridApi.setGridOption('rowData', result.data || []);
@@ -470,6 +706,7 @@
           $('#searchDepartment').val(null).trigger('change');
           $('#searchBatch').val(null).trigger('change');
           document.getElementById('searchGeneral').value = '';
+          closeDetailCard(); // Close detail card when clearing search
           loadData();
         }
 

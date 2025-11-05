@@ -1,4 +1,6 @@
-﻿using EduSuite.Data.EduSuite.Data;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using EduSuite.Data.EduSuite.Data;
 using EduSuite.Data.Entities;
 using EduSuite.Services.Helpers;
 using EduSuite.Services.Interface;
@@ -6,6 +8,8 @@ using EduSuite.Services.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -27,7 +31,10 @@ namespace EduSuite.Services.Implementation
     string? sortColumn, string? sortDir,
     Dictionary<string, string[]>? filters)
         {
-            var query = _context.Students
+            //await ImportAlumniFromCsv("C:\\Alumni Data - Sheet1.csv");
+
+            var query = _context.Alumnis
+                .AsNoTracking()
                 .Include(s => s.Department)
                 .Include(s => s.Batch)
                 .AsQueryable();
@@ -36,8 +43,8 @@ namespace EduSuite.Services.Implementation
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(s =>
-                    s.FullName.Contains(search) ||
-                    s.RollNumber.Contains(search) ||
+                    s.Name.Contains(search) ||
+                    s.RegNo.Contains(search) ||
                     s.Department.DepartmentName.Contains(search) ||
                     s.Batch.BatchName.Contains(search));
             }
@@ -55,12 +62,12 @@ namespace EduSuite.Services.Implementation
                         {
                             case "rollnumber":
                                 // For roll number, support partial matching
-                                query = query.Where(s => values.Any(v => s.RollNumber.Contains(v)));
+                                query = query.Where(s => values.Any(v => s.RegNo.Contains(v)));
                                 break;
 
                             case "fullname":
                                 // For full name, support partial matching
-                                query = query.Where(s => values.Any(v => s.FullName.Contains(v)));
+                                query = query.Where(s => values.Any(v => s.Name.Contains(v)));
                                 break;
 
                             case "departmentid":
@@ -108,33 +115,68 @@ namespace EduSuite.Services.Implementation
                 bool isDesc = sortDir?.ToLower() == "desc";
                 query = sortColumn.ToLower() switch
                 {
-                    "id" => isDesc ? query.OrderByDescending(s => s.Id) : query.OrderBy(s => s.Id),
-                    "rollnumber" => isDesc ? query.OrderByDescending(s => s.RollNumber) : query.OrderBy(s => s.RollNumber),
-                    "fullname" => isDesc ? query.OrderByDescending(s => s.FullName) : query.OrderBy(s => s.FullName),
+                    "id" => isDesc ? query.OrderByDescending(s => s.AlumniId) : query.OrderBy(s => s.AlumniId),
+                    "rollnumber" => isDesc ? query.OrderByDescending(s => s.RegNo) : query.OrderBy(s => s.RegNo),
+                    "fullname" => isDesc ? query.OrderByDescending(s => s.Name) : query.OrderBy(s => s.Name),
                     "departmentname" => isDesc ? query.OrderByDescending(s => s.Department.DepartmentName) : query.OrderBy(s => s.Department.DepartmentName),
                     "batchname" => isDesc ? query.OrderByDescending(s => s.Batch.BatchName) : query.OrderBy(s => s.Batch.BatchName),
-                    _ => query.OrderBy(s => s.Id)
+                    _ => query.OrderBy(s => s.AlumniId)
                 };
             }
             else
             {
                 // Default sorting
-                query = query.OrderBy(s => s.Id);
+                query = query.OrderBy(s => s.AlumniId);
             }
 
             // Pagination and projection
             var data = await query
+                .AsNoTracking()
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(s => new AlumniGridDto
                 {
-                    Id = s.Id,
-                    RollNumber = s.RollNumber,
-                    FullName = s.FullName,
+                    AlumniId = s.AlumniId,
+                    RegNo = s.RegNo,
+                    Name = s.Name,
                     DepartmentId = s.DepartmentId,
                     DepartmentName = s.Department.DepartmentName,
                     BatchId = s.BatchId,
-                    BatchName = s.Batch.BatchName
+                    BatchName = s.Batch.BatchName,
+                    AadharNo = s.AadharNo,
+                    BloodGroup = s.BloodGroup,
+                    DateOfBirth = s.DateOfBirth,
+                    DateOfSignature = s.DateOfSignature,
+                    EmergencyPhone = s.EmergencyPhone,
+                    ExtraCurricularInterests = s.ExtraCurricularInterests,
+                    HallNameRoom = s.HallNameRoom,
+                    Hobbies = s.Hobbies,
+                    InterestedInPartTimeJob = s.InterestedInPartTimeJob,
+                    LanguagesKnown = s.LanguagesKnown,
+                    LocalGuardianName = s.LocalGuardianName,
+                    LocalGuardianPhone = s.LocalGuardianPhone,
+                    MccEmail = s.MccEmail,
+                    MobileNumber = s.MobileNumber,
+                    ModeOfConveyance = s.ModeOfConveyance,
+                    NameFromForm = s.NameFromForm,
+                    ParentGuardianSignature = s.ParentGuardianSignature,
+                    Nationality = s.Nationality,
+                    PersonalEmail = s.PersonalEmail,
+                    PhysicalDisability = s.PhysicalDisability,
+                    ReligionCommunity = s.ReligionCommunity,
+                    SocialFacebook  = s.SocialFacebook,
+                    SocialInstagram = s.SocialInstagram,
+                    SocialTwitter = s.SocialTwitter,
+                    SpecialHealthComplaint = s.SpecialHealthComplaint,
+                    SslcAchievements = s.SslcAchievements,
+                    SslcMarks = s.SslcMarks,
+                    SslcPercentage = s.SslcPercentage,
+                    SslcSchool = s.SslcSchool,
+                    CreatedBy = s.CreatedBy,
+                    CreatedOn = s.CreatedOn,
+                    ModifiedBy = s.ModifiedBy,
+                    ModifiedOn = s.ModifiedOn                  
+
                 })
                 .ToListAsync();
 
@@ -194,6 +236,98 @@ namespace EduSuite.Services.Implementation
                 TotalRecords = totalRecords,
                 LastPage = (int)Math.Ceiling((double)totalRecords / request.Size)
             };
+        }
+
+        public async Task ImportAlumniFromCsv(string csvPath)
+        {
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null,
+            };
+
+            using var reader = new StreamReader(csvPath);
+            using var csv = new CsvReader(reader, config);
+
+            var records = csv.GetRecords<dynamic>().ToList();
+            var alumnis = new List<Alumni>();
+
+            foreach (var r in records)
+            {
+                var alum = new Alumni
+                {
+                    DepartmentId = 1,
+                    BatchId = 1,
+
+                    Name = Get(r, "Student Name (List)"),
+                    RegNo = Get(r, "Reg No"),
+                    MccEmail = Get(r, "MCC Email"),
+                    NameFromForm = Get(r, "Name (from form)"),
+                    DateOfBirth = ToDate(Get(r, "Date of Birth")),
+                    PersonalEmail = Get(r, "Personal Email-Id"),
+                    ReligionCommunity = Get(r, "Religion & Community"),
+                    Nationality = Get(r, "Nationality"),
+                    AadharNo = Get(r, "Aadhar No"),
+                    BloodGroup = Get(r, "Blood Group"),
+                    MobileNumber = Get(r, "Mobile Number"),
+                    SslcSchool = Get(r, "S.S.L.C School"),
+                    SslcMarks = Get(r, "S.S.L.C Marks"),
+                    SslcPercentage = Get(r, "S.S.L.C Percentage"),
+                    SslcAchievements = Get(r, "S.S.L.C Achievements"),
+                    ModeOfConveyance = Get(r, "Mode of Conveyance"),
+                    HallNameRoom = Get(r, "Hall Name & Room"),
+                    LocalGuardianName = Get(r, "Local Guardian Name"),
+                    LocalGuardianPhone = Get(r, "Local Guardian Phone Number"),
+                    Hobbies = Get(r, "Hobbies"),
+                    ExtraCurricularInterests = Get(r, "Extra-Curricular Interests"),
+                    SocialFacebook = Get(r, "Social Media (Facebook)"),
+                    SocialInstagram = Get(r, "Social Media (Instagram)"),
+                    SocialTwitter = Get(r, "Social Media (Twitter)"),
+                    LanguagesKnown = Get(r, "Languages Known"),
+                    InterestedInPartTimeJob = Get(r, "Interested in part time job?"),
+                    SpecialHealthComplaint = Get(r, "Special Health Complaint/Allergic to"),
+                    PhysicalDisability = Get(r, "Physical Disability if any"),
+                    EmergencyPhone = Get(r, "In case of Emergency Phone No"),
+                    DateOfSignature = ToDate(Get(r, "Date of Signature")),
+                    ParentGuardianSignature = Get(r, "Parent/Guardian Signature"),
+
+                    CreatedOn = DateTime.Now,
+                    ModifiedOn = DateTime.Now
+                };
+
+                alumnis.Add(alum);
+            }
+
+            await _context.Alumnis.AddRangeAsync(alumnis);
+            await _context.SaveChangesAsync();
+        }
+
+        // Helper to convert CSV values safely
+        string? Get(dynamic row, string column)
+        {
+            try
+            {
+                var dict = (IDictionary<string, object>)row;
+                return dict[column]?.ToString()?.Trim();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Convert Date formats ("23/09/22", "23-9-2022", "2022-09-23")
+        DateTime? ToDate(string? value)
+        {
+            if (DateTime.TryParse(value, out var d))
+                return d;
+
+            string[] formats = { "dd/MM/yyyy", "d/M/yyyy", "dd-MM-yyyy", "d-M-yyyy", "dd/MM/yy", "d/M/yy" };
+
+            if (DateTime.TryParseExact(value, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+                return d;
+
+            return null;
         }
     }
 }

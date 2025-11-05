@@ -21,6 +21,7 @@ namespace EduSuite.Data
             public DbSet<Department> Departments => Set<Department>();
             public DbSet<Role> Roles => Set<Role>();
             public DbSet<Batch> Batchs => Set<Batch>();
+            public DbSet<Alumni> Alumnis { get; set; }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
@@ -43,6 +44,34 @@ namespace EduSuite.Data
                     .WithOne(l => l.Student)
                     .HasForeignKey<Student>(s => s.LoginId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<Alumni>(entity =>
+                {
+                    entity.ToTable("Alumnis");
+
+                    entity.HasKey(e => e.AlumniId);
+
+                    entity.Property(e => e.CreatedOn)
+                          .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    entity.Property(e => e.ModifiedOn)
+                          .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                          .ValueGeneratedOnAddOrUpdate();
+
+                    entity.HasIndex(e => e.RegNo);
+                    entity.HasIndex(e => e.MccEmail);
+                    entity.HasIndex(e => e.PersonalEmail);
+
+                    entity.HasOne(e => e.Department)
+                          .WithMany()
+                          .HasForeignKey(e => e.DepartmentId)
+                          .OnDelete(DeleteBehavior.Restrict);
+
+                    entity.HasOne(e => e.Batch)
+                          .WithMany()
+                          .HasForeignKey(e => e.BatchId)
+                          .OnDelete(DeleteBehavior.Restrict);
+                });
             }
 
             // Automatically set CreatedOn and ModifiedOn

@@ -12,11 +12,9 @@ namespace EduSuite.Web.Areas.Alumni.Controllers
     {
 
         private readonly IAlumniService _alumniService;
-        private readonly ILookupService _lookupService;
         public AlumniController(IAlumniService alumniService, ILookupService lookupService)
         {
             _alumniService = alumniService;
-            _lookupService = lookupService;
         }
 
         public IActionResult Index()

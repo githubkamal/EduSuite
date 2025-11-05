@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduSuite.Services.Models
+namespace EduSuite.Data.Entities
 {
-    public class AlumniGridDto
+    using System;
+
+    public class Alumni
     {
         public int AlumniId { get; set; }
         public int DepartmentId { get; set; }
-        public string? DepartmentName { get; set; }
         public int BatchId { get; set; }
-        public string? BatchName { get; set; }
+
         public string? Name { get; set; }
         public string? RegNo { get; set; }
         public string? MccEmail { get; set; }
@@ -49,5 +50,10 @@ namespace EduSuite.Services.Models
         public DateTime ModifiedOn { get; set; }
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
+
+        // Navigation Properties
+        public Department Department { get; set; }
+        public Batch Batch { get; set; }
     }
+
 }
