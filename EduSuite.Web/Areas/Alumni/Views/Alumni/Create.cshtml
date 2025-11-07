@@ -1,0 +1,296 @@
+﻿@model EduSuite.Services.Models.AlumniGridDto
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Alumni/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/all.min.css" rel="stylesheet" />
+<style type="text/css">
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+            .form-group input:focus,
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .success-message {
+        background: #4caf50;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: none;
+    }
+
+    h2 {
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    h3 {
+        color: #667eea;
+        margin: 30px 0 20px;
+    }
+
+        h3:first-of-type {
+            margin-top: 0;
+        }
+
+    h4 {
+        color: #666;
+        margin: 20px 0 10px;
+    }
+
+
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 id="formTitle" style="margin: 0;">Add Alumni Information</h2>
+    <button class="btn" onclick="window.location.href='@Url.Action("Index", "Dashboard", new { area = "Alumni" })'">
+        ← Back to Dashboard
+    </button>
+</div>
+<div id="alumniSuccess" class="success-message"></div>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <h3>Department Information</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-building"></i> Department *</label>
+            <select asp-for="DepartmentId" required
+                    asp-items="ViewBag.Departments">
+                <option value="">-- Select Department --</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-users"></i> Batch *</label>
+            <select asp-for="BatchId" required
+                    asp-items="ViewBag.Batches">
+                <option value="">-- Select Batch --</option>
+            </select>
+        </div>
+    </div>
+
+    <h3>Personal Information</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-user"></i> Name *</label>
+            <input type="text" asp-for="Name" placeholder="Enter full name" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-id-card"></i> RegNo *</label>
+            <input type="text" asp-for="RegNo" placeholder="e.g., REG2024001" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-envelope"></i> MccEmail *</label>
+            <input type="email" asp-for="MccEmail" placeholder="example@mcc.edu" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-file-signature"></i> NameFromForm *</label>
+            <input type="text" asp-for="NameFromForm" placeholder="Name as per official records" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-calendar-alt"></i> Date of Birth *</label>
+            <input type="date" id="alumniDOB" asp-for="DateOfBirth" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-at"></i> Personal Email *</label>
+            <input type="email" asp-for="PersonalEmail" placeholder="yourname@gmail.com" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-mobile-alt"></i> Mobile Number *</label>
+            <input type="tel" id="alumniMobile" asp-for="MobileNumber" placeholder="10-digit mobile number" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-pray"></i> Religion & Community</label>
+            <input type="text" id="alumniReligion" asp-for="ReligionCommunity" placeholder="e.g., Hindu - OC" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-flag"></i> Nationality</label>
+            <input type="text" id="alumniNationality" value="Indian" asp-for="Nationality" placeholder="Indian" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-fingerprint"></i> Aadhar Number</label>
+            <input type="text" id="alumniAadhar" asp-for="AadharNo" placeholder="12-digit Aadhar number" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-tint"></i> Blood Group</label>
+            <select id="alumniBloodGroup" asp-for="BloodGroup">
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-language"></i> Languages Known</label>
+            <input type="text" id="languagesKnown" asp-for="LanguagesKnown" placeholder="e.g., English, Tamil, Hindi" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-heartbeat"></i> Special Health Complaint</label>
+            <input type="text" id="specialHealthComplaint" asp-for="SpecialHealthComplaint" placeholder="Any health conditions (if none, type 'None')" required>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-wheelchair"></i> Physical Disability</label>
+            <input type="text" id="physicalDisability" asp-for="PhysicalDisability" placeholder="Any disabilities (if none, type 'None')" required>
+        </div>
+    </div>
+
+    <h3>Academic History</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-school"></i> SSLC School Name</label>
+            <input type="text" id="sslcSchool" asp-for="SslcSchool" placeholder="Name of your 10th standard school">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-chart-line"></i> SSLC Marks</label>
+            <input type="text" id="sslcMarks" asp-for="SslcMarks" placeholder="Total marks obtained">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-percent"></i> Sslc Percentage</label>
+            <input type="text" id="sslcPercentage" asp-for="SslcPercentage" placeholder="e.g., 85.5%">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-trophy"></i> Sslc Achievements</label>
+            <input type="text" id="sslcAchievements" asp-for="SslcAchievements" placeholder="Awards, distinctions, etc.">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-bus"></i> Mode Of Conveyance</label>
+            <input type="text" id="modeOfConveyance" asp-for="ModeOfConveyance" placeholder="e.g., Bus, Bike, Hostel">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-home"></i> Hall Name Room</label>
+            <input type="text" id="hallNameRoom" asp-for="HallNameRoom" placeholder="Hostel/Hall name and room number">
+        </div>
+    </div>
+
+
+    <h3>Guardian Details</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-user-shield"></i> Local Guardian Name</label>
+            <input type="text" id="localGuardianName" asp-for="LocalGuardianName" placeholder="Name of local guardian">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-phone"></i> Local Guardian Phone</label>
+            <input type="tel" id="localGuardianPhone" asp-for="LocalGuardianPhone" placeholder="10-digit phone number">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-signature"></i> Parent Guardian Signature</label>
+            <input type="text" id="parentGuardianSignature" asp-for="ParentGuardianSignature" placeholder="Parent/Guardian signature">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-exclamation-triangle"></i> Emergency Phone</label>
+            <input type="tel" id="emergencyPhone" asp-for="EmergencyPhone" placeholder="Emergency contact number">
+        </div>
+    </div>
+
+    <h3>Hobbies & Interests</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-heart"></i> Hobbies</label>
+            <input type="text" id="hobbies" asp-for="Hobbies" placeholder="e.g., Reading, Sports, Music">
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-star"></i> Extra Curricular Interests</label>
+            <input type="text" id="ExtraCurricularInterests" asp-for="ExtraCurricularInterests" placeholder="e.g., Drama, Debate, Photography">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-briefcase"></i> Interested In PartTime Job</label>
+            <input type="text" id="interestedInPartTimeJob" asp-for="InterestedInPartTimeJob" placeholder="Yes/No">
+        </div>
+    </div>
+    
+<h3>Social Platforms</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fab fa-facebook"></i> Facebook</label>
+            <input type="text" id="socialFacebook" asp-for="SocialFacebook" placeholder="Facebook profile URL or username">
+        </div>
+        <div class="form-group">
+            <label><i class="fab fa-instagram"></i> Instagram</label>
+            <input type="text" id="socialInstagram" asp-for="SocialInstagram" placeholder="Instagram handle">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fab fa-twitter"></i> Twitter</label>
+            <input type="text" id="socialTwitter" asp-for="SocialTwitter" placeholder="Twitter handle">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label><i class="fas fa-calendar-check"></i> Date Of Signature</label>
+            <input type="date" id="dateOfSignature" asp-for="DateOfSignature">
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px;">
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "Dashboard", new { area = "Alumni" })'">
+            <i class="fas fa-times"></i> Cancel
+        </button>
+        <button type="submit" class="btn">
+            <i class="fas fa-save"></i> Save Alumni Information
+        </button>
+    </div>
+</form>
+

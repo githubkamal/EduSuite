@@ -19,11 +19,11 @@ namespace EduSuite.Services.Models
         public string? NameFromForm { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? PersonalEmail { get; set; }
+        public string? MobileNumber { get; set; }
         public string? ReligionCommunity { get; set; }
         public string? Nationality { get; set; }
         public string? AadharNo { get; set; }
         public string? BloodGroup { get; set; }
-        public string? MobileNumber { get; set; }
         public string? SslcSchool { get; set; }
         public string? SslcMarks { get; set; }
         public string? SslcPercentage { get; set; }
@@ -32,18 +32,18 @@ namespace EduSuite.Services.Models
         public string? HallNameRoom { get; set; }
         public string? LocalGuardianName { get; set; }
         public string? LocalGuardianPhone { get; set; }
+        public string? ParentGuardianSignature { get; set; }
+        public string? EmergencyPhone { get; set; }
         public string? Hobbies { get; set; }
         public string? ExtraCurricularInterests { get; set; }
+        public string? InterestedInPartTimeJob { get; set; }
         public string? SocialFacebook { get; set; }
         public string? SocialInstagram { get; set; }
         public string? SocialTwitter { get; set; }
         public string? LanguagesKnown { get; set; }
-        public string? InterestedInPartTimeJob { get; set; }
         public string? SpecialHealthComplaint { get; set; }
         public string? PhysicalDisability { get; set; }
-        public string? EmergencyPhone { get; set; }
         public DateTime? DateOfSignature { get; set; }
-        public string? ParentGuardianSignature { get; set; }
 
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }

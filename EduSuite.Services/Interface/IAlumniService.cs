@@ -16,5 +16,8 @@ namespace EduSuite.Services.Interface
         int page, int pageSize, string? search,
         string? sortColumn, string? sortDir,
         Dictionary<string, string[]>? filters);
+        Task AddAlumniAsync(AlumniGridDto alumniGridDto);
+        Task UpdateAlumniAsync(int id, AlumniGridDto dto);
+        Task<AlumniGridDto> GetAlumniAsync(int id);
     }
 }

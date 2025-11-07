@@ -26,6 +26,144 @@ namespace EduSuite.Services.Implementation
             _context = context;
         }
 
+        public async Task<AlumniGridDto> GetAlumniAsync(int id)
+        {
+            var alumni = await _context.Alumnis.FindAsync(id);
+
+            if (alumni == null)
+            {
+                return new AlumniGridDto();
+            }
+            else
+            {
+                var alumniGridDto = new AlumniGridDto();
+                alumniGridDto.AlumniId = alumni.AlumniId;
+                alumniGridDto.AadharNo = alumni.AadharNo;
+                alumniGridDto.BatchId = alumni.BatchId;
+                alumniGridDto.BloodGroup = alumni.BloodGroup;
+                alumniGridDto.DateOfBirth = alumni.DateOfBirth;
+                alumniGridDto.DateOfSignature = alumni.DateOfSignature;
+                alumniGridDto.DepartmentId = alumni.DepartmentId;
+                alumniGridDto.EmergencyPhone = alumni.EmergencyPhone;
+                alumniGridDto.ExtraCurricularInterests = alumni.ExtraCurricularInterests;
+                alumniGridDto.HallNameRoom = alumni.HallNameRoom;
+                alumniGridDto.Hobbies = alumni.Hobbies;
+                alumniGridDto.InterestedInPartTimeJob = alumni.InterestedInPartTimeJob;
+                alumniGridDto.LanguagesKnown = alumni.LanguagesKnown;
+                alumniGridDto.LocalGuardianName = alumni.LocalGuardianName;
+                alumniGridDto.LocalGuardianPhone = alumni.LocalGuardianPhone;
+                alumniGridDto.MccEmail = alumni.MccEmail;
+                alumniGridDto.MobileNumber = alumni.MobileNumber;
+                alumniGridDto.ModeOfConveyance = alumni.ModeOfConveyance;
+                alumniGridDto.Name = alumni.Name;
+                alumniGridDto.NameFromForm = alumni.NameFromForm;
+                alumniGridDto.Nationality = alumni.Nationality;
+                alumniGridDto.ParentGuardianSignature = alumni.ParentGuardianSignature;
+                alumniGridDto.PersonalEmail = alumni.PersonalEmail;
+                alumniGridDto.PhysicalDisability = alumni.PhysicalDisability;
+                alumniGridDto.RegNo = alumni.RegNo;
+                alumniGridDto.ReligionCommunity = alumni.ReligionCommunity;
+                alumniGridDto.SocialFacebook = alumni.SocialFacebook;
+                alumniGridDto.SocialInstagram = alumni.SocialInstagram;
+                alumniGridDto.SocialTwitter = alumni.SocialTwitter;
+                alumniGridDto.SpecialHealthComplaint = alumni.SpecialHealthComplaint;
+                alumniGridDto.SslcAchievements = alumni.SslcAchievements;
+                alumniGridDto.SslcMarks = alumni.SslcMarks;
+                alumniGridDto.SslcPercentage = alumni.SslcPercentage;
+                alumniGridDto.SslcSchool = alumni.SslcSchool;
+                alumniGridDto.CreatedOn = alumni.CreatedOn;
+                alumniGridDto.ModifiedOn = alumni.ModifiedOn;
+                alumniGridDto.CreatedBy = alumni.CreatedBy;
+                alumniGridDto.ModifiedBy = alumni.ModifiedBy;
+
+                return alumniGridDto;
+            }
+        }
+        public async Task AddAlumniAsync(AlumniGridDto alumniGridDto)
+        {
+            var alumni = new Alumni
+            {
+                AadharNo = alumniGridDto.AadharNo,
+                BatchId = alumniGridDto.BatchId,
+                BloodGroup = alumniGridDto.BloodGroup,
+                DateOfBirth = alumniGridDto.DateOfBirth,
+                DateOfSignature = alumniGridDto.DateOfSignature,
+                DepartmentId = alumniGridDto.DepartmentId,
+                EmergencyPhone = alumniGridDto.EmergencyPhone,
+                ExtraCurricularInterests = alumniGridDto.ExtraCurricularInterests,
+                HallNameRoom = alumniGridDto.HallNameRoom,
+                Hobbies = alumniGridDto.Hobbies,
+                InterestedInPartTimeJob = alumniGridDto.InterestedInPartTimeJob,
+                LanguagesKnown = alumniGridDto.LanguagesKnown,
+                LocalGuardianName = alumniGridDto.LocalGuardianName,
+                LocalGuardianPhone = alumniGridDto.LocalGuardianPhone,
+                MccEmail = alumniGridDto.MccEmail,
+                MobileNumber = alumniGridDto.MobileNumber,
+                ModeOfConveyance = alumniGridDto.ModeOfConveyance,
+                Name = alumniGridDto.Name,
+                NameFromForm = alumniGridDto.NameFromForm,
+                Nationality = alumniGridDto.Nationality,
+                ParentGuardianSignature = alumniGridDto.ParentGuardianSignature,
+                PersonalEmail = alumniGridDto.PersonalEmail,
+                PhysicalDisability = alumniGridDto.PhysicalDisability,
+                RegNo = alumniGridDto.RegNo,
+                ReligionCommunity = alumniGridDto.ReligionCommunity,
+                SocialFacebook = alumniGridDto.SocialFacebook,
+                SocialInstagram = alumniGridDto.SocialInstagram,
+                SocialTwitter = alumniGridDto.SocialTwitter,
+                SpecialHealthComplaint = alumniGridDto.SpecialHealthComplaint,
+                SslcAchievements = alumniGridDto.SslcAchievements,
+                SslcMarks = alumniGridDto.SslcMarks,
+                SslcPercentage = alumniGridDto.SslcPercentage,
+                SslcSchool = alumniGridDto.SslcSchool
+            };
+            _context.Alumnis.Add(alumni);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAlumniAsync(int id, AlumniGridDto dto)
+        {
+            var alumni = await _context.Alumnis.FindAsync(id);
+
+            if (alumni == null)
+                throw new Exception("Alumni not found");
+
+            alumni.AadharNo = dto.AadharNo;
+            alumni.BatchId = dto.BatchId;
+            alumni.BloodGroup = dto.BloodGroup;
+            alumni.DateOfBirth = dto.DateOfBirth;
+            alumni.DateOfSignature = dto.DateOfSignature;
+            alumni.DepartmentId = dto.DepartmentId;
+            alumni.EmergencyPhone = dto.EmergencyPhone;
+            alumni.ExtraCurricularInterests = dto.ExtraCurricularInterests;
+            alumni.HallNameRoom = dto.HallNameRoom;
+            alumni.Hobbies = dto.Hobbies;
+            alumni.InterestedInPartTimeJob = dto.InterestedInPartTimeJob;
+            alumni.LanguagesKnown = dto.LanguagesKnown;
+            alumni.LocalGuardianName = dto.LocalGuardianName;
+            alumni.LocalGuardianPhone = dto.LocalGuardianPhone;
+            alumni.MccEmail = dto.MccEmail;
+            alumni.MobileNumber = dto.MobileNumber;
+            alumni.ModeOfConveyance = dto.ModeOfConveyance;
+            alumni.Name = dto.Name;
+            alumni.NameFromForm = dto.NameFromForm;
+            alumni.Nationality = dto.Nationality;
+            alumni.ParentGuardianSignature = dto.ParentGuardianSignature;
+            alumni.PersonalEmail = dto.PersonalEmail;
+            alumni.PhysicalDisability = dto.PhysicalDisability;
+            alumni.RegNo = dto.RegNo;
+            alumni.ReligionCommunity = dto.ReligionCommunity;
+            alumni.SocialFacebook = dto.SocialFacebook;
+            alumni.SocialInstagram = dto.SocialInstagram;
+            alumni.SocialTwitter = dto.SocialTwitter;
+            alumni.SpecialHealthComplaint = dto.SpecialHealthComplaint;
+            alumni.SslcAchievements = dto.SslcAchievements;
+            alumni.SslcMarks = dto.SslcMarks;
+            alumni.SslcPercentage = dto.SslcPercentage;
+            alumni.SslcSchool = dto.SslcSchool;
+
+            await _context.SaveChangesAsync();
+        }
         public async Task<(IEnumerable<AlumniGridDto> data, int total)> GetAlumnisAsync(
     int page, int pageSize, string? search,
     string? sortColumn, string? sortDir,
@@ -164,7 +302,7 @@ namespace EduSuite.Services.Implementation
                     PersonalEmail = s.PersonalEmail,
                     PhysicalDisability = s.PhysicalDisability,
                     ReligionCommunity = s.ReligionCommunity,
-                    SocialFacebook  = s.SocialFacebook,
+                    SocialFacebook = s.SocialFacebook,
                     SocialInstagram = s.SocialInstagram,
                     SocialTwitter = s.SocialTwitter,
                     SpecialHealthComplaint = s.SpecialHealthComplaint,
@@ -175,7 +313,7 @@ namespace EduSuite.Services.Implementation
                     CreatedBy = s.CreatedBy,
                     CreatedOn = s.CreatedOn,
                     ModifiedBy = s.ModifiedBy,
-                    ModifiedOn = s.ModifiedOn                  
+                    ModifiedOn = s.ModifiedOn
 
                 })
                 .ToListAsync();
@@ -186,7 +324,7 @@ namespace EduSuite.Services.Implementation
         public async Task<TabulatorResponse<Student>> GetData(TabulatorRequest request)
         {
 
-            var query =  _context.Students.AsQueryable().AsNoTracking();
+            var query = _context.Students.AsQueryable().AsNoTracking();
 
             // 🔍 Apply Filters
             foreach (var f in request.Filters)
@@ -211,7 +349,7 @@ namespace EduSuite.Services.Implementation
                     var role = roleElem.GetString() ?? "";
                     query = query.Where(x => x.RollNumber.Contains(role));
                 }
-                
+
             }
 
             // Sorting

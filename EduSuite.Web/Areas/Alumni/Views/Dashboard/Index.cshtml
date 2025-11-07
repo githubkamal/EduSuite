@@ -6,7 +6,8 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Dashboard - Alumni Management System</title>
-    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link href="~/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/alumni.css" asp-append-version="true" />
     <link href="~/css/ag-grid.css" rel="stylesheet" />
     <link href="~/css/ag-theme-alpine.css" rel="stylesheet" />
     <link href="~/css/select2.min.css" rel="stylesheet" />
@@ -373,10 +374,10 @@
             </div>
         </div>
         <div class="content">
-            <div class="nav-buttons">
-                <button class="btn" onclick="window.location.href='add-alumni.html'">Add Alumni</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="formTitle" style="margin: 0;">Alumni Records</h2>
+                <button class="btn" onclick="window.location.href='@Url.Action("Create", "Alumni", new { area = "Alumni" })'">+ Add Alumni</button>
             </div>
-            <h2>Alumni Records</h2>
 
             <!-- Search Form -->
             <div class="search-form">
@@ -458,8 +459,6 @@
         // Extract departments and batches from ViewBag
         const departments = @Html.Raw(Json.Serialize(ViewBag.Departments));
         const batches = @Html.Raw(Json.Serialize(ViewBag.Batches));
-        console.log('departments:', departments);
-        console.log('batches:', batches);
 
         // Define all fields that should appear in the detail card
         const detailFields = [
@@ -528,6 +527,18 @@
                 sortable: true,
                 filter: 'agTextColumnFilter'
               },
+              {
+                headerName: "Actions",
+                width: 120,
+                field: "alumniId",
+                cellRenderer: function (params) {
+                  return `
+                    <i class="fa fa-edit text-primary"
+                       style="cursor:pointer; font-size:18px"
+                       onclick="editAlumni(${params.value})">
+                    </i>`;
+                }
+            },
             ],
             defaultColDef: {
               flex: 1,
@@ -579,6 +590,10 @@
         function onRowClicked(event) {
           const rowData = event.data;
           showDetailCard(rowData);
+        }
+
+        function editAlumni(id) {
+          window.location.href = `/Alumni/Alumni/Edit/${id}`;
         }
 
         function showDetailCard(data) {
@@ -657,7 +672,7 @@
             }
 
 
-            const response = await fetch('/Alumni/GetAlumnis', {
+            const response = await fetch('/Alumni/Alumni/GetAlumnis', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(request)

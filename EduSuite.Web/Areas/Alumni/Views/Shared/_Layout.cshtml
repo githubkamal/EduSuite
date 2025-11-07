@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Alumni Management System</title>
+    <link rel="stylesheet" href="~/css/alumni.css" asp-append-version="true" />
+    <link href="~/css/ag-grid.css" rel="stylesheet" />
+    <link href="~/css/ag-theme-alpine.css" rel="stylesheet" />
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="~/js/select2.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-user">
+                <span class="user-name">
+                    <span class="user-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <span id="userName">Welcome, User</span>
+                </span>
+                <button class="btn btn-logout" onclick="logout()">Logout</button>
+            </div>
+            <div class="header-content">
+                <h1>Alumni Management System</h1>
+                <p>B.Sc. Computer Science, Madras Christian College</p>
+            </div>
+        </div>
+        <div class="content">
+        @RenderBody()
+        </div>
+    </div>
+</body>
+</html>
