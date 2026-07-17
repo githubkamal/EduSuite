@@ -1,15 +1,27 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/LogoutButton";
 
-export function AppHeader({ userName, role }: { userName: string; role?: string }) {
+export function AdminHeader({ userName }: { userName: string }) {
+  const pathname = usePathname();
+
   return (
     <div className="header">
       <div className="header-content">
-        <h1>Alumni Management System</h1>
-        <p>B.Sc. Computer Science, Madras Christian College</p>
+        <h1>Admin Panel</h1>
+        <p>Manage staff accounts and courses</p>
       </div>
       <div className="header-user">
+        <nav className="admin-nav">
+          <a href="/admin/staff" className={pathname?.startsWith("/admin/staff") ? "active" : ""}>
+            Staff
+          </a>
+          <a href="/admin/courses" className={pathname?.startsWith("/admin/courses") ? "active" : ""}>
+            Courses
+          </a>
+          <a href="/alumni/dashboard">Dashboard</a>
+        </nav>
         <span className="user-name">
           <span className="user-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -19,11 +31,6 @@ export function AppHeader({ userName, role }: { userName: string; role?: string 
           </span>
           <span>Welcome, {userName}</span>
         </span>
-        {role === "Admin" && (
-          <a href="/admin/staff" className="btn-logout">
-            Admin Panel
-          </a>
-        )}
         <LogoutButton />
       </div>
     </div>

@@ -1,5 +1,3 @@
-import "./welcome.css";
-
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return <div className="auth-body">{children}</div>;
 }

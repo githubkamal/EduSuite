@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireSession } from "@/lib/requireSession";
-import { getAlumniById, updateAlumni } from "@/lib/queries/alumni";
+import { requireSession, requireAdmin } from "@/lib/requireSession";
+import { getAlumniById, updateAlumni, deleteAlumni } from "@/lib/queries/alumni";
 import type { AlumniRecord } from "@/lib/types";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -43,4 +43,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const message = err instanceof Error ? err.message : "Failed to update alumni record.";
     return NextResponse.json({ error: message }, { status: 400 });
   }
+}
+
+/** Only Admin accounts can delete alumni records. */
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { unauthorized } = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
+  const { id } = await params;
+  const alumniId = parseInt(id, 10);
+  if (!Number.isFinite(alumniId)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+
+  const existing = await getAlumniById(alumniId);
+  if (!existing) {
+    return NextResponse.json({ error: "Alumni not found" }, { status: 404 });
+  }
+
+  await deleteAlumni(alumniId);
+  return NextResponse.json({ success: true });
 }

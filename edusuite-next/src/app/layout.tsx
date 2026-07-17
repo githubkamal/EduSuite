@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./(auth)/welcome.css";
+import "./alumni/alumni.css";
+import "./admin/admin.css";
 
 export const metadata: Metadata = {
   title: "Alumni Management System",

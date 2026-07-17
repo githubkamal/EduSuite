@@ -1,17 +1,20 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { AppHeader } from "@/components/AppHeader";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 
-export default async function AlumniLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) {
     redirect("/login");
+  }
+  if (session.role !== "Admin") {
+    redirect("/alumni/dashboard");
   }
 
   return (
     <div className="alumni-body">
       <div className="container">
-        <AppHeader userName={session.name} role={session.role} />
+        <AdminHeader userName={session.name} />
         <div className="content">{children}</div>
       </div>
     </div>

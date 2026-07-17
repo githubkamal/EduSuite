@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "reset-password": "node --env-file=.env.local scripts/reset-password.mjs",
     "import-alumni-csv": "node --env-file=.env.local scripts/import-alumni-csv.mjs"
   },
@@ -21,7 +22,8 @@
     "next": "^15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-select": "^5.9.0"
+    "react-select": "^5.9.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

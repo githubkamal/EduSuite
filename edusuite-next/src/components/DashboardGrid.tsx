@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef, GridApi, GridReadyEvent, ICellRendererParams } from "ag-grid-community";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
-import Select from "react-select";
+import Select, { type StylesConfig } from "react-select";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import type { Department, Batch, AlumniRecord } from "@/lib/types";
-import { DETAIL_FIELDS } from "@/lib/alumniFields";
+import { DETAIL_FIELDS, EXPORT_COLUMNS } from "@/lib/alumniFields";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -17,6 +17,35 @@ interface Option {
   value: number;
   label: string;
 }
+
+// Matches the rounded/shadowed look of the rest of the form controls.
+const selectStyles: StylesConfig<Option, true> = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: 38,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: state.isFocused ? "#111827" : "#e5e7eb",
+    boxShadow: state.isFocused ? "0 0 0 3px rgba(17, 24, 39, 0.08)" : "0 1px 2px rgba(17, 24, 39, 0.03)",
+    "&:hover": { borderColor: state.isFocused ? "#111827" : "#d1d5db" },
+  }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: 10,
+    overflow: "hidden",
+    boxShadow: "0 1px 3px rgba(17, 24, 39, 0.08), 0 12px 32px rgba(17, 24, 39, 0.12)",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? "#111827" : state.isFocused ? "#f9fafb" : "white",
+    color: state.isSelected ? "white" : "#111827",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    borderRadius: 6,
+    backgroundColor: "#f3f4f6",
+  }),
+};
 
 function formatDate(dateString?: string | null) {
   if (!dateString) return null;
@@ -57,23 +86,51 @@ function PhotoCellRenderer(props: ICellRendererParams<AlumniRecord>) {
   );
 }
 
-function EditCellRenderer(props: ICellRendererParams<AlumniRecord>) {
-  const router = useRouter();
-  return (
-    <i
-      className="fa fa-edit text-primary"
-      style={{ cursor: "pointer", fontSize: 18, color: "#007bff" }}
-      onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/alumni/edit/${props.value}`);
-      }}
-    />
-  );
+function makeActionsCellRenderer(
+  onDelete: (id: number, name: string | null) => void,
+  isAdmin: boolean
+) {
+  return function ActionsCellRenderer(props: ICellRendererParams<AlumniRecord>) {
+    const router = useRouter();
+    const id = props.data?.alumniId;
+    if (id === undefined) return null;
+    return (
+      <div style={{ display: "flex", gap: 14, alignItems: "center", height: "100%" }}>
+        <i
+          className="fa fa-edit"
+          title="Edit"
+          style={{ cursor: "pointer", fontSize: 18, color: "var(--color-accent)" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/alumni/edit/${id}`);
+          }}
+        />
+        {isAdmin && (
+          <i
+            className="fa fa-trash"
+            title="Delete"
+            style={{ cursor: "pointer", fontSize: 16, color: "#991b1b" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(id, props.data?.name ?? null);
+            }}
+          />
+        )}
+      </div>
+    );
+  };
 }
 
-export function DashboardGrid({ departments, batches }: { departments: Department[]; batches: Batch[] }) {
+export function DashboardGrid({
+  departments,
+  batches,
+  isAdmin = false,
+}: {
+  departments: Department[];
+  batches: Batch[];
+  isAdmin?: boolean;
+}) {
   const router = useRouter();
-  const [gridApi, setGridApi] = useState<GridApi<AlumniRecord> | null>(null);
   const [rowData, setRowData] = useState<AlumniRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState<AlumniRecord | null>(null);
@@ -161,6 +218,22 @@ export function DashboardGrid({ departments, batches }: { departments: Departmen
     loadData();
   }
 
+  async function handleDelete(id: number, name: string | null) {
+    if (!confirm(`Delete alumni record "${name || id}"? This can't be undone.`)) return;
+    try {
+      const res = await fetch(`/api/alumni/${id}`, { method: "DELETE" });
+      const result = await res.json();
+      if (!res.ok) {
+        alert(result.error || "Failed to delete alumni record.");
+        return;
+      }
+      if (selectedRow?.alumniId === id) setSelectedRow(null);
+      searchData();
+    } catch {
+      alert("Something went wrong while deleting. Please try again.");
+    }
+  }
+
   const columnDefs: ColDef<AlumniRecord>[] = useMemo(
     () => [
       { headerName: "ID", field: "alumniId", sortable: true, filter: "agNumberColumnFilter", hide: true },
@@ -172,31 +245,62 @@ export function DashboardGrid({ departments, batches }: { departments: Departmen
       { headerName: "Batch", field: "batchName", sortable: true, filter: "agTextColumnFilter" },
       {
         headerName: "Actions",
-        width: 120,
-        field: "alumniId",
-        cellRenderer: EditCellRenderer,
+        width: isAdmin ? 100 : 70,
+        sortable: false,
+        filter: false,
+        cellRenderer: makeActionsCellRenderer(handleDelete, isAdmin),
       },
     ],
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isAdmin, selectedRow]
   );
 
   const defaultColDef: ColDef = { flex: 1, sortable: true, filter: true, resizable: true };
 
-  function onGridReady(event: GridReadyEvent<AlumniRecord>) {
-    setGridApi(event.api);
-  }
-
-  function exportToExcel() {
-    gridApi?.exportDataAsExcel({
-      fileName: "Alumni_Records_" + new Date().toISOString().split("T")[0] + ".xlsx",
-      sheetName: "Alumni",
+  // Exports every AlumniRecord field (EXPORT_COLUMNS), not just the handful
+  // of columns shown in the grid — built independently of AG Grid's own
+  // export APIs, which (a) only export visible grid columns and (b) require
+  // an AG Grid Enterprise license for Excel export.
+  function buildExportRows(): Record<string, unknown>[] {
+    return rowData.map((row) => {
+      const record = row as unknown as Record<string, unknown>;
+      const out: Record<string, unknown> = {};
+      for (const col of EXPORT_COLUMNS) {
+        out[col.label] = record[col.key] ?? "";
+      }
+      return out;
     });
   }
 
-  function exportToCSV() {
-    gridApi?.exportDataAsCsv({
-      fileName: "Alumni_Records_" + new Date().toISOString().split("T")[0] + ".csv",
+  function downloadBlob(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function exportToExcel() {
+    const XLSX = await import("xlsx");
+    const worksheet = XLSX.utils.json_to_sheet(buildExportRows(), {
+      header: EXPORT_COLUMNS.map((c) => c.label),
     });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Alumni");
+    XLSX.writeFile(workbook, "Alumni_Records_" + new Date().toISOString().split("T")[0] + ".xlsx");
+  }
+
+  async function exportToCSV() {
+    const XLSX = await import("xlsx");
+    const worksheet = XLSX.utils.json_to_sheet(buildExportRows(), {
+      header: EXPORT_COLUMNS.map((c) => c.label),
+    });
+    const csv = XLSX.utils.sheet_to_csv(worksheet);
+    downloadBlob(
+      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+      "Alumni_Records_" + new Date().toISOString().split("T")[0] + ".csv"
+    );
   }
 
   return (
@@ -236,21 +340,25 @@ export function DashboardGrid({ departments, batches }: { departments: Departmen
           <div className="form-group">
             <label>Department</label>
             <Select
+              instanceId="department-filter"
               isMulti
               options={departmentOptions}
               value={selectedDepartments}
               onChange={(v) => setSelectedDepartments(v as Option[])}
               placeholder="Select departments"
+              styles={selectStyles}
             />
           </div>
           <div className="form-group">
             <label>Batch</label>
             <Select
+              instanceId="batch-filter"
               isMulti
               options={batchOptions}
               value={selectedBatches}
               onChange={(v) => setSelectedBatches(v as Option[])}
               placeholder="Select batches"
+              styles={selectStyles}
             />
           </div>
         </div>
@@ -275,6 +383,7 @@ export function DashboardGrid({ departments, batches }: { departments: Departmen
 
       <div className="grid-detail-container">
         <div className="grid-wrapper">
+          <div className="grid-card">
           <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
             <AgGridReact<AlumniRecord>
               theme="legacy"
@@ -285,9 +394,9 @@ export function DashboardGrid({ departments, batches }: { departments: Departmen
               paginationPageSize={10}
               rowSelection="single"
               onRowClicked={(e) => setSelectedRow(e.data ?? null)}
-              onGridReady={onGridReady}
               overlayNoRowsTemplate='<span style="padding: 20px; font-size: 16px; color: #666;">No records to display</span>'
             />
+          </div>
           </div>
         </div>
 

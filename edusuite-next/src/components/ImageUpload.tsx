@@ -77,13 +77,13 @@ export function ImageUpload({
         </div>
         <div>
           <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} disabled={uploading} />
-          {uploading && <div style={{ fontSize: 13, color: "#667eea", marginTop: 4 }}>Uploading...</div>}
+          {uploading && <div style={{ fontSize: 13, color: "var(--color-accent)", marginTop: 4 }}>Uploading...</div>}
           {error && <div style={{ fontSize: 13, color: "#f44336", marginTop: 4 }}>{error}</div>}
           {value && !uploading && (
             <button
               type="button"
               onClick={() => onChange(null)}
-              style={{ marginTop: 4, background: "none", border: "none", color: "#667eea", textDecoration: "underline", cursor: "pointer", fontSize: 13, padding: 0 }}
+              style={{ marginTop: 4, background: "none", border: "none", color: "var(--color-accent)", textDecoration: "underline", cursor: "pointer", fontSize: 13, padding: 0 }}
             >
               Remove photo
             </button>

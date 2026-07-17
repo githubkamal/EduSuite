@@ -77,6 +77,10 @@ export async function getAlumniById(id: number): Promise<AlumniRecord | null> {
   return rows[0] as AlumniRecord;
 }
 
+export async function deleteAlumni(id: number): Promise<void> {
+  await getPool().query("DELETE FROM alumnis WHERE AlumniId = ?", [id]);
+}
+
 export async function createAlumni(dto: Partial<AlumniRecord>): Promise<number> {
   const columns: string[] = [];
   const placeholders: string[] = [];

@@ -127,3 +127,18 @@ export const DETAIL_FIELDS: { key: string; label: string; date?: boolean }[] = [
   { key: "jobRole", label: "Role" },
   { key: "location", label: "Location" },
 ];
+
+// Every column on the AlumniRecord, for the dashboard's Excel/CSV export —
+// deliberately broader than the grid's visible columns or the detail card.
+export const EXPORT_COLUMNS: { key: string; label: string; date?: boolean }[] = [
+  { key: "alumniId", label: "ID" },
+  { key: "regNo", label: "Roll Number" },
+  { key: "name", label: "Full Name" },
+  { key: "mccEmail", label: "MCC Email" },
+  { key: "departmentName", label: "Department" },
+  { key: "batchName", label: "Batch" },
+  ...DETAIL_FIELDS,
+  { key: "imagePath", label: "Photo URL" },
+  { key: "createdOn", label: "Created On" },
+  { key: "modifiedOn", label: "Modified On" },
+];

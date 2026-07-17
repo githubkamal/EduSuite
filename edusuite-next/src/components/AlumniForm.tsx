@@ -33,12 +33,14 @@ export function AlumniForm({
   departments,
   batches,
   initialValues,
+  isAdmin = false,
 }: {
   mode: "create" | "edit";
   alumniId?: number;
   departments: Department[];
   batches: Batch[];
   initialValues?: Partial<AlumniRecord>;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<FormValues>(() => toFormValues(initialValues));
@@ -46,6 +48,26 @@ export function AlumniForm({
   const [careerStatus, setCareerStatus] = useState<CareerStatus>(() => initialCareerStatus(initialValues));
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (!alumniId) return;
+    if (!confirm("Delete this alumni record? This can't be undone.")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/alumni/${alumniId}`, { method: "DELETE" });
+      const result = await res.json();
+      if (!res.ok) {
+        setError(result.error || "Failed to delete alumni record.");
+        return;
+      }
+      router.push("/alumni/dashboard");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   function setField(key: string, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -95,7 +117,7 @@ export function AlumniForm({
   }
 
   return (
-    <>
+    <div className="form-page">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ margin: 0 }}>{mode === "create" ? "Add Alumni Information" : "Edit Alumni Information"}</h2>
         <button className="btn" type="button" onClick={() => router.push("/alumni/dashboard")}>
@@ -225,15 +247,24 @@ export function AlumniForm({
           </div>
         )}
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 30 }}>
-          <button type="button" className="btn btn-secondary" onClick={() => router.push("/alumni/dashboard")}>
-            <i className="fas fa-times" /> Cancel
-          </button>
-          <button type="submit" className="btn" disabled={submitting}>
-            <i className="fas fa-save" /> {mode === "create" ? "Save Alumni Information" : "Update Alumni Information"}
-          </button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 30 }}>
+          {mode === "edit" && isAdmin ? (
+            <button type="button" className="btn-danger" onClick={handleDelete} disabled={deleting}>
+              <i className="fas fa-trash" /> {deleting ? "Deleting..." : "Delete Alumni"}
+            </button>
+          ) : (
+            <span />
+          )}
+          <div style={{ display: "flex", gap: 10 }}>
+            <button type="button" className="btn btn-secondary" onClick={() => router.push("/alumni/dashboard")}>
+              <i className="fas fa-times" /> Cancel
+            </button>
+            <button type="submit" className="btn" disabled={submitting}>
+              <i className="fas fa-save" /> {mode === "create" ? "Save Alumni Information" : "Update Alumni Information"}
+            </button>
+          </div>
         </div>
       </form>
-    </>
+    </div>
   );
 }
