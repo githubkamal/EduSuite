@@ -33,8 +33,8 @@ export const ALUMNI_SECTIONS: AlumniSection[] = [
       { key: "aadharNo", label: "Aadhar Number", icon: "fa-fingerprint", type: "text", placeholder: "12-digit Aadhar number", required: true },
       { key: "bloodGroup", label: "Blood Group", icon: "fa-tint", type: "text" },
       { key: "languagesKnown", label: "Languages Known", icon: "fa-language", type: "text", placeholder: "e.g., English, Tamil, Hindi", required: true },
-      { key: "specialHealthComplaint", label: "Special Health Complaint", icon: "fa-heartbeat", type: "text", placeholder: "Any health conditions (if none, type 'None')", required: true },
-      { key: "physicalDisability", label: "Physical Disability", icon: "fa-wheelchair", type: "text", placeholder: "Any disabilities (if none, type 'None')", required: true },
+      { key: "specialHealthComplaint", label: "Special Health Complaint", icon: "fa-heartbeat", type: "text", placeholder: "Any health conditions (if none, type 'None')" },
+      { key: "physicalDisability", label: "Physical Disability", icon: "fa-wheelchair", type: "text", placeholder: "Any disabilities (if none, type 'None')" },
     ],
   },
   {
@@ -139,6 +139,7 @@ export const EXPORT_COLUMNS: { key: string; label: string; date?: boolean }[] = 
   { key: "batchName", label: "Batch" },
   ...DETAIL_FIELDS,
   { key: "imagePath", label: "Photo URL" },
+  { key: "statusDocumentPath", label: "Status Document URL" },
   { key: "createdOn", label: "Created On" },
   { key: "modifiedOn", label: "Modified On" },
 ];

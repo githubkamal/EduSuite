@@ -12,6 +12,7 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": ".png",
   "image/webp": ".webp",
   "image/gif": ".gif",
+  "application/pdf": ".pdf",
 };
 
 export async function POST(req: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   const extension = ALLOWED_TYPES[file.type];
   if (!extension) {
     return NextResponse.json(
-      { error: "Unsupported image type. Use JPEG, PNG, WEBP, or GIF." },
+      { error: "Unsupported file type. Use JPEG, PNG, WEBP, GIF, or PDF." },
       { status: 400 }
     );
   }

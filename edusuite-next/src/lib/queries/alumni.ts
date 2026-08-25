@@ -42,6 +42,7 @@ const ALUMNI_COLUMNS = [
   "CompanyName",
   "JobRole",
   "Location",
+  "StatusDocumentPath",
 ] as const;
 
 type AlumniColumn = (typeof ALUMNI_COLUMNS)[number];
@@ -69,6 +70,7 @@ export async function getAlumniById(id: number): Promise<AlumniRecord | null> {
        DateOfSignature AS dateOfSignature, ParentGuardianSignature AS parentGuardianSignature,
        ImagePath AS imagePath, CollegeName AS collegeName, Degree AS degree,
        CompanyName AS companyName, JobRole AS jobRole, Location AS location,
+       StatusDocumentPath AS statusDocumentPath,
        CreatedOn AS createdOn, ModifiedOn AS modifiedOn, CreatedBy AS createdBy, ModifiedBy AS modifiedBy
      FROM alumnis WHERE AlumniId = ? LIMIT 1`,
     [id]
@@ -226,6 +228,7 @@ export async function searchAlumni(request: AlumniSearchRequest): Promise<Alumni
        s.PhysicalDisability AS physicalDisability, s.DateOfSignature AS dateOfSignature,
        s.ImagePath AS imagePath, s.CollegeName AS collegeName, s.Degree AS degree,
        s.CompanyName AS companyName, s.JobRole AS jobRole, s.Location AS location,
+       s.StatusDocumentPath AS statusDocumentPath,
        s.CreatedBy AS createdBy, s.CreatedOn AS createdOn, s.ModifiedBy AS modifiedBy, s.ModifiedOn AS modifiedOn
      FROM alumnis s
      JOIN departments d ON d.DepartmentId = s.DepartmentId

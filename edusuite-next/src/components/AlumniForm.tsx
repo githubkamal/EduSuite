@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Department, Batch, AlumniRecord } from "@/lib/types";
 import { ALUMNI_SECTIONS, BLOOD_GROUPS, HIGHER_STUDIES_FIELDS, EMPLOYMENT_FIELDS } from "@/lib/alumniFields";
 import { ImageUpload } from "@/components/ImageUpload";
+import { DocumentUpload } from "@/components/DocumentUpload";
 
 type FormValues = Record<string, string>;
 type CareerStatus = "" | "studying" | "working";
@@ -45,6 +46,7 @@ export function AlumniForm({
   const router = useRouter();
   const [values, setValues] = useState<FormValues>(() => toFormValues(initialValues));
   const [imagePath, setImagePath] = useState<string | null>(initialValues?.imagePath ?? null);
+  const [statusDocumentPath, setStatusDocumentPath] = useState<string | null>(initialValues?.statusDocumentPath ?? null);
   const [careerStatus, setCareerStatus] = useState<CareerStatus>(() => initialCareerStatus(initialValues));
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -82,6 +84,7 @@ export function AlumniForm({
       departmentId: Number(values.departmentId),
       batchId: Number(values.batchId),
       imagePath,
+      statusDocumentPath: careerStatus === "" ? null : statusDocumentPath,
     };
     for (const section of ALUMNI_SECTIONS) {
       for (const field of section.fields) {
@@ -210,41 +213,61 @@ export function AlumniForm({
                 checked={careerStatus === ""}
                 onChange={() => setCareerStatus("")}
               />
-              Not specified
+              Not specified (e.g., business/entrepreneurship)
             </span>
           </label>
         </div>
 
         {careerStatus === "studying" && (
-          <div className="form-row">
-            {HIGHER_STUDIES_FIELDS.map((field) => (
-              <div className="form-group" key={field.key}>
-                <label><i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label}</label>
-                <input
-                  type={field.type}
-                  value={values[field.key]}
-                  placeholder={field.placeholder}
-                  onChange={(e) => setField(field.key, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="form-row">
+              {HIGHER_STUDIES_FIELDS.map((field) => (
+                <div className="form-group" key={field.key}>
+                  <label><i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label}</label>
+                  <input
+                    type={field.type}
+                    value={values[field.key]}
+                    placeholder={field.placeholder}
+                    onChange={(e) => setField(field.key, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="form-row">
+              <DocumentUpload
+                label="College ID Card"
+                icon="fa-id-card"
+                value={statusDocumentPath}
+                onChange={setStatusDocumentPath}
+              />
+            </div>
+          </>
         )}
 
         {careerStatus === "working" && (
-          <div className="form-row">
-            {EMPLOYMENT_FIELDS.map((field) => (
-              <div className="form-group" key={field.key}>
-                <label><i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label}</label>
-                <input
-                  type={field.type}
-                  value={values[field.key]}
-                  placeholder={field.placeholder}
-                  onChange={(e) => setField(field.key, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="form-row">
+              {EMPLOYMENT_FIELDS.map((field) => (
+                <div className="form-group" key={field.key}>
+                  <label><i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label}</label>
+                  <input
+                    type={field.type}
+                    value={values[field.key]}
+                    placeholder={field.placeholder}
+                    onChange={(e) => setField(field.key, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="form-row">
+              <DocumentUpload
+                label="Offer Letter / Work ID Card"
+                icon="fa-file-invoice"
+                value={statusDocumentPath}
+                onChange={setStatusDocumentPath}
+              />
+            </div>
+          </>
         )}
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 30 }}>

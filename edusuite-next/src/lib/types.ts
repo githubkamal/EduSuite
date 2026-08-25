@@ -64,6 +64,7 @@ export interface AlumniRecord {
   companyName: string | null;
   jobRole: string | null;
   location: string | null;
+  statusDocumentPath: string | null;
   createdOn?: string;
   modifiedOn?: string;
   createdBy?: number | null;
