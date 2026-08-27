@@ -6,8 +6,8 @@ import "./alumni/alumni.css";
 import "./admin/admin.css";
 
 export const metadata: Metadata = {
-  title: "Alumni Management System",
-  description: "B.Sc. Computer Science, Madras Christian College",
+  title: "Roots and Routes - Alumni Mangement System",
+  description: "Department of Computer Science (Shift-II)Madras Christian College",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

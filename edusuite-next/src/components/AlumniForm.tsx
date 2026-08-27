@@ -8,9 +8,10 @@ import { ImageUpload } from "@/components/ImageUpload";
 import { DocumentUpload } from "@/components/DocumentUpload";
 
 type FormValues = Record<string, string>;
-type CareerStatus = "" | "studying" | "working";
+type CareerStatus = "" | "studying" | "working" | "others";
 
 function initialCareerStatus(record?: Partial<AlumniRecord>): CareerStatus {
+  if (record?.otherStatus) return "others";
   if (record?.collegeName || record?.degree) return "studying";
   if (record?.companyName || record?.jobRole || record?.location) return "working";
   return "";
@@ -20,10 +21,18 @@ function toFormValues(record?: Partial<AlumniRecord>): FormValues {
   const values: FormValues = {
     departmentId: record?.departmentId ? String(record.departmentId) : "",
     batchId: record?.batchId ? String(record.batchId) : "",
+    otherStatus: record?.otherStatus ?? "",
   };
   for (const field of [...ALUMNI_SECTIONS.flatMap((s) => s.fields), ...HIGHER_STUDIES_FIELDS, ...EMPLOYMENT_FIELDS]) {
     const v = (record as unknown as Record<string, string | null | undefined>)?.[field.key];
     values[field.key] = v ?? "";
+  }
+  // Default Special Health Complaint and Physical Disability to "None" if empty/unset
+  if (!values.specialHealthComplaint) {
+    values.specialHealthComplaint = "None";
+  }
+  if (!values.physicalDisability) {
+    values.physicalDisability = "None";
   }
   return values;
 }
@@ -84,7 +93,8 @@ export function AlumniForm({
       departmentId: Number(values.departmentId),
       batchId: Number(values.batchId),
       imagePath,
-      statusDocumentPath: careerStatus === "" ? null : statusDocumentPath,
+      statusDocumentPath: careerStatus === "studying" || careerStatus === "working" ? statusDocumentPath : null,
+      otherStatus: careerStatus === "others" ? values.otherStatus || null : null,
     };
     for (const section of ALUMNI_SECTIONS) {
       for (const field of section.fields) {
@@ -162,7 +172,37 @@ export function AlumniForm({
             <div className="form-row">
               {section.fields.map((field) => (
                 <div className="form-group" key={field.key}>
-                  <label><i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label} {field.required ? "*" : ""}</label>
+                  {field.key === "hscSchool" ? (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <label style={{ margin: 0 }}>
+                        <i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label} {field.required ? "*" : ""}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setField("hscSchool", values.sslcSchool || "")}
+                        style={{
+                          background: "#f3f4f6",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "6px",
+                          padding: "2px 8px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          color: "#374151",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                        title="Auto-fill with SSLC School Name"
+                      >
+                        <i className="fas fa-copy" style={{ fontSize: "11px" }} /> Same as SSLC
+                      </button>
+                    </div>
+                  ) : (
+                    <label>
+                      <i className={`${field.iconPrefix ?? "fas"} ${field.icon}`} /> {field.label} {field.required ? "*" : ""}
+                    </label>
+                  )}
                   {field.key === "bloodGroup" ? (
                     <select value={values.bloodGroup} onChange={(e) => setField("bloodGroup", e.target.value)}>
                       <option value="">Select Blood Group</option>
@@ -187,8 +227,8 @@ export function AlumniForm({
 
         <h3>Current Status</h3>
         <div className="form-group">
-          <label style={{ display: "flex", gap: 20, fontWeight: 400 }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <label style={{ display: "flex", gap: 20, fontWeight: 400, flexWrap: "wrap" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input
                 type="radio"
                 name="careerStatus"
@@ -197,7 +237,7 @@ export function AlumniForm({
               />
               Pursuing higher studies
             </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input
                 type="radio"
                 name="careerStatus"
@@ -206,17 +246,32 @@ export function AlumniForm({
               />
               Currently working
             </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input
                 type="radio"
                 name="careerStatus"
-                checked={careerStatus === ""}
-                onChange={() => setCareerStatus("")}
+                checked={careerStatus === "others"}
+                onChange={() => setCareerStatus("others")}
               />
-              Not specified (e.g., business/entrepreneurship)
+              Others
             </span>
           </label>
         </div>
+
+        {careerStatus === "others" && (
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label><i className="fas fa-briefcase" /> Specify Status / Activity *</label>
+              <input
+                type="text"
+                value={values.otherStatus}
+                placeholder="e.g., Business, Entrepreneurship, Competitive Exam Preparation, Freelancing, etc."
+                required
+                onChange={(e) => setField("otherStatus", e.target.value)}
+              />
+            </div>
+          </div>
+        )}
 
         {careerStatus === "studying" && (
           <>
