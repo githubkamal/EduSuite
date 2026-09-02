@@ -35,6 +35,7 @@ export function ImageUpload({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("kind", "image");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const result = await res.json();
       if (!res.ok) {

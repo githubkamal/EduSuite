@@ -2,13 +2,13 @@
 
 import { useRef, useState } from "react";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
 /**
- * Generic single-document uploader (image or PDF) with a filename/link
- * preview instead of the circular avatar look of ImageUpload — used for
- * status-related documents like a college ID card or offer letter.
+ * Generic single-document uploader with a filename/link preview instead of
+ * the circular avatar look of ImageUpload — used for status-related
+ * documents like a college ID card or offer letter. Accepts any file type
+ * (the server enforces size; see /api/upload's "document" kind).
  */
 export function DocumentUpload({
   label,
@@ -31,10 +31,6 @@ export function DocumentUpload({
 
     setError("");
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      setError("Unsupported file type. Use JPEG, PNG, WEBP, GIF, or PDF.");
-      return;
-    }
     if (file.size > MAX_SIZE_BYTES) {
       setError("File must be 5MB or smaller.");
       return;
@@ -44,6 +40,7 @@ export function DocumentUpload({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("kind", "document");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const result = await res.json();
       if (!res.ok) {
@@ -63,7 +60,7 @@ export function DocumentUpload({
     <div className="form-group">
       <label><i className={`fas ${icon}`} /> {label}</label>
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onChange={handleFileChange} disabled={uploading} />
+        <input ref={inputRef} type="file" onChange={handleFileChange} disabled={uploading} />
         {uploading && <span style={{ fontSize: 13, color: "var(--color-accent)" }}>Uploading...</span>}
         {value && !uploading && (
           <>
