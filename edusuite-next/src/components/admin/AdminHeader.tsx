@@ -8,17 +8,45 @@ export function AdminHeader({ userName }: { userName: string }) {
 
   return (
     <div className="header">
-      <div className="header-content">
-        <h1>Admin Panel</h1>
-        <p>Manage staff accounts and courses</p>
+      <div className="header-content" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.jpg"
+          alt="MCC Logo"
+          style={{ height: 68, width: "auto", objectFit: "contain", flexShrink: 0 }}
+        />
+        <div>
+          <h1 style={{ margin: 0, fontSize: "1.35rem", lineHeight: 1.2 }}>Admin Panel</h1>
+          <p style={{ margin: "4px 0 0 0", fontSize: "0.875rem", color: "var(--color-text-muted)" }}>
+            Manage departments, batches, bulk data import, and staff accounts
+          </p>
+        </div>
       </div>
       <div className="header-user">
         <nav className="admin-nav">
-          <a href="/admin/staff" className={pathname?.startsWith("/admin/staff") ? "active" : ""}>
-            Staff
+          <a
+            href="/admin/departments"
+            className={pathname?.startsWith("/admin/departments") || pathname?.startsWith("/admin/courses") ? "active" : ""}
+          >
+            Departments
           </a>
-          <a href="/admin/courses" className={pathname?.startsWith("/admin/courses") ? "active" : ""}>
-            Courses
+          <a
+            href="/admin/batches"
+            className={pathname?.startsWith("/admin/batches") ? "active" : ""}
+          >
+            Batches
+          </a>
+          <a
+            href="/admin/import"
+            className={pathname?.startsWith("/admin/import") ? "active" : ""}
+          >
+            Bulk Import
+          </a>
+          <a
+            href="/admin/staff"
+            className={pathname?.startsWith("/admin/staff") ? "active" : ""}
+          >
+            Staff
           </a>
           <a href="/alumni/dashboard">Dashboard</a>
         </nav>

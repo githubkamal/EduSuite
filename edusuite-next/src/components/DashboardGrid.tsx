@@ -87,19 +87,34 @@ function PhotoCellRenderer(props: ICellRendererParams<AlumniRecord>) {
 }
 
 function makeActionsCellRenderer(
+  onView: (record: AlumniRecord) => void,
   onDelete: (id: number, name: string | null) => void,
   isAdmin: boolean
 ) {
   return function ActionsCellRenderer(props: ICellRendererParams<AlumniRecord>) {
     const router = useRouter();
-    const id = props.data?.alumniId;
-    if (id === undefined) return null;
+    const record = props.data;
+    const id = record?.alumniId;
+    if (id === undefined || !record) return null;
     return (
-      <div style={{ display: "flex", gap: 14, alignItems: "center", height: "100%" }}>
+      <div
+        className="actions-cell"
+        style={{ display: "flex", gap: 12, alignItems: "center", height: "100%" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <i
+          className="fas fa-eye"
+          title="View Details"
+          style={{ cursor: "pointer", fontSize: 16, color: "var(--color-text-muted)" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onView(record);
+          }}
+        />
         <i
           className="fa fa-edit"
           title="Edit"
-          style={{ cursor: "pointer", fontSize: 18, color: "var(--color-accent)" }}
+          style={{ cursor: "pointer", fontSize: 16, color: "var(--color-accent)" }}
           onClick={(e) => {
             e.stopPropagation();
             router.push(`/alumni/edit/${id}`);
@@ -109,10 +124,10 @@ function makeActionsCellRenderer(
           <i
             className="fa fa-trash"
             title="Delete"
-            style={{ cursor: "pointer", fontSize: 16, color: "#991b1b" }}
+            style={{ cursor: "pointer", fontSize: 15, color: "#991b1b" }}
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(id, props.data?.name ?? null);
+              onDelete(id, record.name ?? null);
             }}
           />
         )}
@@ -244,15 +259,20 @@ export function DashboardGrid({
       { headerName: "Department", field: "departmentName", sortable: true, filter: "agTextColumnFilter" },
       { headerName: "Batch", field: "batchName", sortable: true, filter: "agTextColumnFilter" },
       {
+        colId: "actions",
         headerName: "Actions",
-        width: isAdmin ? 100 : 70,
+        width: isAdmin ? 120 : 85,
         sortable: false,
         filter: false,
-        cellRenderer: makeActionsCellRenderer(handleDelete, isAdmin),
+        cellRenderer: makeActionsCellRenderer(
+          (record) => setSelectedRow((prev) => (prev?.alumniId === record.alumniId ? null : record)),
+          handleDelete,
+          isAdmin
+        ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isAdmin, selectedRow]
+    [isAdmin]
   );
 
   const defaultColDef: ColDef = { flex: 1, sortable: true, filter: true, resizable: true };
@@ -392,8 +412,12 @@ export function DashboardGrid({
               rowData={rowData}
               pagination
               paginationPageSize={10}
-              rowSelection="single"
-              onRowClicked={(e) => setSelectedRow(e.data ?? null)}
+              onCellClicked={(e) => {
+                if (e.column?.getColId() === "actions") return;
+                if (e.data) {
+                  setSelectedRow(e.data);
+                }
+              }}
               overlayNoRowsTemplate='<span style="padding: 20px; font-size: 16px; color: #666;">No records to display</span>'
             />
           </div>

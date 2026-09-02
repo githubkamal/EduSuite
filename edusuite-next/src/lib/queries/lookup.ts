@@ -23,7 +23,7 @@ export async function getRoles(): Promise<Role[]> {
   return rows as Role[];
 }
 
-// Departments double as the "courses" (BSc CS, BCA, MSc CS, MCA, ...) offered.
+// Department operations
 export async function createDepartment(name: string): Promise<number> {
   const [result] = await getPool().query<ResultSetHeader>(
     "INSERT INTO departments (DepartmentName, ModifiedBy) VALUES (?, 0)",
@@ -42,4 +42,25 @@ export async function updateDepartment(id: number, name: string): Promise<void> 
 /** Throws if the department is still referenced by alumni/students (FK restrict). */
 export async function deleteDepartment(id: number): Promise<void> {
   await getPool().query("DELETE FROM departments WHERE DepartmentId = ?", [id]);
+}
+
+// Batch operations
+export async function createBatch(name: string): Promise<number> {
+  const [result] = await getPool().query<ResultSetHeader>(
+    "INSERT INTO batchs (BatchName, ModifiedBy) VALUES (?, 0)",
+    [name]
+  );
+  return result.insertId;
+}
+
+export async function updateBatch(id: number, name: string): Promise<void> {
+  await getPool().query(
+    "UPDATE batchs SET BatchName = ? WHERE BatchId = ?",
+    [name, id]
+  );
+}
+
+/** Throws if the batch is still referenced by alumni/students (FK restrict). */
+export async function deleteBatch(id: number): Promise<void> {
+  await getPool().query("DELETE FROM batchs WHERE BatchId = ?", [id]);
 }

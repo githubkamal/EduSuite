@@ -1,4 +1,4 @@
-﻿@model EduSuite.Web.Models.RegisterViewModel
+@model EduSuite.Web.Models.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
     Layout = null;
@@ -9,14 +9,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup - Alumni Management System</title>
+    <title>Signup - Roots and Routes - Alumni Mangement System</title>
     <link rel="stylesheet" href="~/css/welcome.css" asp-append-version="true" />
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Alumni Management System</h1>
-            <p>B.Sc. Computer Science, Madras Christian College</p>
+        <div class="header" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+            <img src="~/logo.jpg" alt="MCC Logo" style="height: 80px; width: auto; object-fit: contain;" />
+            <div>
+                <h1 style="margin: 4px 0 0 0; font-size: 1.35rem;">Roots and Routes - Alumni Management System</h1>
+                <p style="margin: 4px 0 0 0; font-size: 0.875rem;">Department of Computer Science (Shift-II) Madras Christian College</p>
+            </div>
         </div>
 
         <div class="content">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AuthSlideshow } from "@/components/AuthSlideshow";
 import type { Department } from "@/lib/types";
 
 export default function RegisterPage() {
@@ -54,19 +55,38 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-card">
-      <div className="auth-image">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/login.png" alt="" />
-      </div>
+      <AuthSlideshow />
 
       <div className="auth-panel">
-        <div className="header">
-          <h1>Alumni Management System</h1>
-          <p>B.Sc. Computer Science, Madras Christian College</p>
+        <div
+          className="header"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            gap: 10,
+            marginBottom: 24,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.jpg"
+            alt="MCC Logo"
+            style={{ height: 80, width: "auto", objectFit: "contain" }}
+          />
+          <div>
+            <h1 style={{ margin: "4px 0 0 0", fontSize: "1.3rem", lineHeight: 1.25 }}>
+              Roots and Routes - Alumni Management System
+            </h1>
+            <p style={{ margin: "4px 0 0 0", fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
+              Department of Computer Science (Shift-II) Madras Christian College
+            </p>
+          </div>
         </div>
 
         <div className="content">
-          <h2>Staff Registration</h2>
+          <h2 style={{ textAlign: "center", marginBottom: 20 }}>Staff Registration</h2>
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} id="signupForm">
@@ -83,7 +103,7 @@ export default function RegisterPage() {
             <div className="form-row">
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" required />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="staff@mcc.edu.in" required />
               </div>
               <div className="form-group">
                 <label>Department</label>

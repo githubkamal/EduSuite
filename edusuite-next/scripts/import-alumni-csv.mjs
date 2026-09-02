@@ -1,7 +1,4 @@
-// Bulk-imports alumni records from a CSV export (mirrors the original
-// AlumniService.ImportAlumniFromCsv, which was invoked ad-hoc from a
-// commented-out line rather than any UI/API route).
-//
+// Bulk-imports alumni records from a CSV export
 // Usage:
 //   npm run import-alumni-csv -- <path-to-csv> [departmentId] [batchId]
 
@@ -23,7 +20,6 @@ const COLUMN_MAP = {
   Name: "Student Name (List)",
   RegNo: "Reg No",
   MccEmail: "MCC Email",
-  NameFromForm: "Name (from form)",
   DateOfBirth: "Date of Birth",
   PersonalEmail: "Personal Email-Id",
   ReligionCommunity: "Religion & Community",
@@ -35,22 +31,20 @@ const COLUMN_MAP = {
   SslcMarks: "S.S.L.C Marks",
   SslcPercentage: "S.S.L.C Percentage",
   SslcAchievements: "S.S.L.C Achievements",
-  ModeOfConveyance: "Mode of Conveyance",
+  HscSchool: "H.S.C School",
+  HscMarks: "H.S.C Marks",
+  HscPercentage: "H.S.C Percentage",
+  HscAchievements: "H.S.C Achievements",
   HallNameRoom: "Hall Name & Room",
+  FatherName: "Father Name",
+  FatherMobile: "Father Mobile",
+  MotherName: "Mother Name",
+  MotherMobile: "Mother Mobile",
   LocalGuardianName: "Local Guardian Name",
   LocalGuardianPhone: "Local Guardian Phone Number",
-  Hobbies: "Hobbies",
-  ExtraCurricularInterests: "Extra-Curricular Interests",
-  SocialFacebook: "Social Media (Facebook)",
-  SocialInstagram: "Social Media (Instagram)",
-  SocialTwitter: "Social Media (Twitter)",
   LanguagesKnown: "Languages Known",
-  InterestedInPartTimeJob: "Interested in part time job?",
   SpecialHealthComplaint: "Special Health Complaint/Allergic to",
   PhysicalDisability: "Physical Disability if any",
-  EmergencyPhone: "In case of Emergency Phone No",
-  DateOfSignature: "Date of Signature",
-  ParentGuardianSignature: "Parent/Guardian Signature",
 };
 
 const DATE_FORMATS = [
@@ -60,6 +54,7 @@ const DATE_FORMATS = [
 ];
 
 function get(row, column) {
+  if (!column) return null;
   const value = row[column];
   return value ? String(value).trim() : null;
 }
@@ -99,20 +94,20 @@ try {
   for (const row of records) {
     await pool.query(
       `INSERT INTO alumnis (
-         DepartmentId, BatchId, Name, RegNo, MccEmail, NameFromForm, DateOfBirth, PersonalEmail,
-         ReligionCommunity, Nationality, AadharNo, BloodGroup, MobileNumber, SslcSchool, SslcMarks,
-         SslcPercentage, SslcAchievements, ModeOfConveyance, HallNameRoom, LocalGuardianName,
-         LocalGuardianPhone, Hobbies, ExtraCurricularInterests, SocialFacebook, SocialInstagram,
-         SocialTwitter, LanguagesKnown, InterestedInPartTimeJob, SpecialHealthComplaint,
-         PhysicalDisability, EmergencyPhone, DateOfSignature, ParentGuardianSignature
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         DepartmentId, BatchId, Name, RegNo, MccEmail, DateOfBirth, PersonalEmail,
+         ReligionCommunity, Nationality, AadharNo, BloodGroup, MobileNumber,
+         SslcSchool, SslcMarks, SslcPercentage, SslcAchievements,
+         HscSchool, HscMarks, HscPercentage, HscAchievements,
+         HallNameRoom, FatherName, FatherMobile, MotherName, MotherMobile,
+         LocalGuardianName, LocalGuardianPhone, LanguagesKnown,
+         SpecialHealthComplaint, PhysicalDisability
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         departmentId,
         batchId,
         get(row, COLUMN_MAP.Name),
         get(row, COLUMN_MAP.RegNo),
         get(row, COLUMN_MAP.MccEmail),
-        get(row, COLUMN_MAP.NameFromForm),
         toDate(get(row, COLUMN_MAP.DateOfBirth)),
         get(row, COLUMN_MAP.PersonalEmail),
         get(row, COLUMN_MAP.ReligionCommunity),
@@ -124,22 +119,20 @@ try {
         get(row, COLUMN_MAP.SslcMarks),
         get(row, COLUMN_MAP.SslcPercentage),
         get(row, COLUMN_MAP.SslcAchievements),
-        get(row, COLUMN_MAP.ModeOfConveyance),
+        get(row, COLUMN_MAP.HscSchool),
+        get(row, COLUMN_MAP.HscMarks),
+        get(row, COLUMN_MAP.HscPercentage),
+        get(row, COLUMN_MAP.HscAchievements),
         get(row, COLUMN_MAP.HallNameRoom),
+        get(row, COLUMN_MAP.FatherName),
+        get(row, COLUMN_MAP.FatherMobile),
+        get(row, COLUMN_MAP.MotherName),
+        get(row, COLUMN_MAP.MotherMobile),
         get(row, COLUMN_MAP.LocalGuardianName),
         get(row, COLUMN_MAP.LocalGuardianPhone),
-        get(row, COLUMN_MAP.Hobbies),
-        get(row, COLUMN_MAP.ExtraCurricularInterests),
-        get(row, COLUMN_MAP.SocialFacebook),
-        get(row, COLUMN_MAP.SocialInstagram),
-        get(row, COLUMN_MAP.SocialTwitter),
         get(row, COLUMN_MAP.LanguagesKnown),
-        get(row, COLUMN_MAP.InterestedInPartTimeJob),
-        get(row, COLUMN_MAP.SpecialHealthComplaint),
-        get(row, COLUMN_MAP.PhysicalDisability),
-        get(row, COLUMN_MAP.EmergencyPhone),
-        toDate(get(row, COLUMN_MAP.DateOfSignature)),
-        get(row, COLUMN_MAP.ParentGuardianSignature),
+        get(row, COLUMN_MAP.SpecialHealthComplaint) || "None",
+        get(row, COLUMN_MAP.PhysicalDisability) || "None",
       ]
     );
   }
